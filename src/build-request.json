@@ -1,0 +1,268 @@
+{
+  "kind": "build_request",
+  "title": "Build Baitoo salon appointment booking app with dual user roles",
+  "projectName": "Baitoo",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement phone number-based authentication system for both salon owners and customers with signup and login flows",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Sign up / Login with phone number"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Users can sign up with phone number",
+        "Users can log in with phone number",
+        "System distinguishes between salon owner and customer roles",
+        "Authentication state persists across sessions"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Create salon profile management interface for salon owners to input and edit shop name, address, contact number, and opening hours",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Create salon profile (Shop Name, Address, Contact Number, Opening Hours)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Salon owners can create a new salon profile",
+        "Profile includes shop name, address, contact number, and opening hours fields",
+        "Salon owners can edit their profile after creation",
+        "Profile data is stored and retrieved correctly"
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Build service management system for salon owners to add, edit, and display services with names and prices in Indian Rupees (e.g., Haircut ₹150, Beard ₹80, Facial ₹500)",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Add services (e.g., Haircut ₹150, Beard ₹80, Facial ₹500)"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Salon owners can add new services with name and price",
+        "Services display prices in rupees format",
+        "Salon owners can edit existing services",
+        "Services are associated with the correct salon profile"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Implement time slot management system for salon owners to set and configure available appointment time slots",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Set available time slots"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Salon owners can define available time slots",
+        "Time slots can be configured per day",
+        "System prevents double-booking of time slots",
+        "Time slots reflect salon opening hours"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Create bookings dashboard for salon owners to view all appointments with customer details, service, and time, with ability to mark bookings as completed",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "View bookings list",
+          "Mark booking as completed"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Salon owners see a list of all their bookings",
+        "Bookings display customer name, service, date, and time",
+        "Salon owners can mark individual bookings as completed",
+        "Completed bookings are visually distinguished from pending ones"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Build customer-facing salon discovery page showing list of salons in Faizabad with basic information",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "View list of nearby salons"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Customers see a list of available salons",
+        "Each salon listing shows shop name and basic info",
+        "Listings are limited to Faizabad area",
+        "Customers can tap on a salon to view details"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Create detailed salon view page displaying complete salon information including services with prices, opening hours, address, and contact number",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "View salon details and services with price"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Salon details page shows all salon profile information",
+        "All services are listed with their prices in rupees",
+        "Opening hours and contact information are clearly displayed",
+        "Page layout is easy to read and navigate"
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "text": "Implement appointment booking flow for customers to select service, choose available time slot, and confirm booking",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Select available time slot",
+          "Book appointment"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Customers can select a service from salon's offerings",
+        "System displays only available time slots",
+        "Customers can complete booking in a clear step-by-step flow",
+        "Booking is saved to database with customer and salon information"
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Create booking confirmation system that displays confirmation details to customer after successful appointment booking",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Receive booking confirmation",
+          "Basic notification system for booking confirmation"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Customers see confirmation message immediately after booking",
+        "Confirmation includes salon name, service, date, and time",
+        "Booking details are stored and retrievable",
+        "Confirmation is sent to both customer and salon owner"
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Build rating and review system allowing customers to submit ratings and written reviews after service completion",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Add rating and review after service"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Customers can only review completed bookings",
+        "Rating includes numeric score and optional written review",
+        "Reviews are associated with the correct salon",
+        "Reviews are displayed on salon detail pages"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Create admin panel interface to view and manage all salons and users in the system",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Admin panel to manage salons and users"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin can view list of all registered salons",
+        "Admin can view list of all users (both salon owners and customers)",
+        "Admin has ability to deactivate or remove salons or users if needed",
+        "Admin panel is protected with authentication"
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "text": "Design and implement a simple, clean, modern mobile-responsive interface with light theme, easy navigation optimized for small-town users with focus on usability",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "Simple, clean, modern UI",
+          "Light theme",
+          "Easy navigation",
+          "Focus on usability for small-town users"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Interface uses light color scheme throughout",
+        "Navigation is intuitive and requires minimal clicks",
+        "UI works well on mobile devices",
+        "Design is clean without unnecessary complexity",
+        "Text and buttons are appropriately sized for easy interaction"
+      ]
+    }
+  ],
+  "constraints": [
+    "Use phone number authentication only (no email)",
+    "Target deployment for 10-20 salons and 100-200 users",
+    "Keep MVP scope without advanced features",
+    "Location-specific to Faizabad, India",
+    "Display all prices in Indian Rupees (₹)"
+  ],
+  "nonGoals": [
+    "Advanced features beyond MVP scope",
+    "SMS-based OTP verification",
+    "Payment gateway integration",
+    "GPS-based location tracking",
+    "Multi-city support in initial version",
+    "Real-time chat between customers and salon owners",
+    "Advanced analytics or reporting dashboards"
+  ],
+  "imageRequirements": {
+    "required": [
+      "Salon chair icon illustration for service listings in warm brown tones (salon-chair-icon.dim_64x64.png)",
+      "Appointment calendar icon in soft orange for booking interface (calendar-icon.dim_64x64.png)",
+      "Star rating icon in gold for review system (star-icon.dim_48x48.png)",
+      "Clean hero banner with abstract salon-themed patterns in muted earth tones (hero-banner.dim_1200x400.png)"
+    ],
+    "edits": []
+  }
+}

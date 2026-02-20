@@ -1,0 +1,239 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-implement-phone-number-based-authentication-system-for-both-salon-owners-and-customers-with-signup-and-login-flows",
+      "featureTitle": "Implement phone number-based authentication system for both salon owners and customers with signup and login flows",
+      "files": [
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/auth/ProfileSetupModal.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-salon-profile-management-interface-for-salon-owners-to-input-and-edit-shop-name-address-contact-number-and-opening-hours",
+      "featureTitle": "Create salon profile management interface for salon owners to input and edit shop name, address, contact number, and opening hours",
+      "files": [
+        "frontend/src/pages/SalonProfilePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-service-management-system-for-salon-owners-to-add-edit-and-display-services-with-names-and-prices-in-indian-rupees-e-g-haircut-150-beard-80-facial-500",
+      "featureTitle": "Build service management system for salon owners to add, edit, and display services with names and prices in Indian Rupees (e.g., Haircut ₹150, Beard ₹80, Facial ₹500)",
+      "files": [
+        "frontend/src/pages/ServiceManagementPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-time-slot-management-system-for-salon-owners-to-set-and-configure-available-appointment-time-slots",
+      "featureTitle": "Implement time slot management system for salon owners to set and configure available appointment time slots",
+      "files": [
+        "frontend/src/pages/TimeSlotManagementPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-bookings-dashboard-for-salon-owners-to-view-all-appointments-with-customer-details-service-and-time-with-ability-to-mark-bookings-as-completed",
+      "featureTitle": "Create bookings dashboard for salon owners to view all appointments with customer details, service, and time, with ability to mark bookings as completed",
+      "files": [
+        "frontend/src/pages/SalonBookingsDashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-customer-facing-salon-discovery-page-showing-list-of-salons-in-faizabad-with-basic-information",
+      "featureTitle": "Build customer-facing salon discovery page showing list of salons in Faizabad with basic information",
+      "files": [
+        "frontend/src/pages/SalonDiscoveryPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-detailed-salon-view-page-displaying-complete-salon-information-including-services-with-prices-opening-hours-address-and-contact-number",
+      "featureTitle": "Create detailed salon view page displaying complete salon information including services with prices, opening hours, address, and contact number",
+      "files": [
+        "frontend/src/pages/SalonDetailPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-appointment-booking-flow-for-customers-to-select-service-choose-available-time-slot-and-confirm-booking",
+      "featureTitle": "Implement appointment booking flow for customers to select service, choose available time slot, and confirm booking",
+      "files": [
+        "frontend/src/pages/BookingPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-booking-confirmation-system-that-displays-confirmation-details-to-customer-after-successful-appointment-booking",
+      "featureTitle": "Create booking confirmation system that displays confirmation details to customer after successful appointment booking",
+      "files": [
+        "frontend/src/pages/BookingConfirmationPage.tsx",
+        "frontend/src/pages/CustomerBookingsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-rating-and-review-system-allowing-customers-to-submit-ratings-and-written-reviews-after-service-completion",
+      "featureTitle": "Build rating and review system allowing customers to submit ratings and written reviews after service completion",
+      "files": [
+        "frontend/src/pages/CustomerBookingsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-admin-panel-interface-to-view-and-manage-all-salons-and-users-in-the-system",
+      "featureTitle": "Create admin panel interface to view and manage all salons and users in the system",
+      "files": [
+        "frontend/src/pages/AdminDashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-design-and-implement-a-simple-clean-modern-mobile-responsive-interface-with-light-theme-easy-navigation-optimized-for-small-town-users-with-focus-on-usability",
+      "featureTitle": "Design and implement a simple, clean, modern mobile-responsive interface with light theme, easy navigation optimized for small-town users with focus on usability",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppLayout.tsx",
+        "frontend/src/components/layout/MobileNav.tsx",
+        "frontend/src/index.css",
+        "frontend/tailwind.config.js"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-12"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

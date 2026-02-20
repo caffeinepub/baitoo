@@ -1,0 +1,21 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup, route definitions for all pages (welcome, salons, bookings, admin), authentication guards, and profile setup modal integration.",
+  "frontend/src/hooks/useQueries.ts": "Comprehensive React Query hooks for all backend operations including user profiles, salons, services, time slots, bookings, reviews, and admin functions with proper cache invalidation.",
+  "frontend/src/components/auth/LoginButton.tsx": "Login/logout button component using Internet Identity with loading states and query cache clearing on logout.",
+  "frontend/src/components/auth/ProfileSetupModal.tsx": "Modal dialog for first-time user profile setup collecting name, phone number, and user type (customer or salon owner) with form validation.",
+  "frontend/src/components/layout/AppLayout.tsx": "Main layout wrapper with sticky header, Baitoo branding, login button, mobile navigation, and footer with caffeine.ai attribution.",
+  "frontend/src/components/layout/MobileNav.tsx": "Bottom navigation bar for mobile with role-based menu items for customers, salon owners, and admins with active state highlighting.",
+  "frontend/src/pages/WelcomePage.tsx": "Landing page with hero banner, feature highlights, and automatic redirection based on user role after login.",
+  "frontend/src/pages/SalonDiscoveryPage.tsx": "Customer-facing page displaying all salons in Faizabad with salon cards showing name, address, contact, hours, and view details button.",
+  "frontend/src/pages/SalonDetailPage.tsx": "Detailed salon view showing complete information, services with prices in rupees, reviews with star ratings, and book appointment button.",
+  "frontend/src/pages/BookingPage.tsx": "Appointment booking form with service and time slot selection dropdowns, form validation, and navigation to confirmation page on success.",
+  "frontend/src/pages/BookingConfirmationPage.tsx": "Booking confirmation screen displaying booking details with success icon and navigation options to view bookings or browse salons.",
+  "frontend/src/pages/CustomerBookingsPage.tsx": "Customer bookings list with status badges, booking details, and review submission dialog for completed bookings with star rating.",
+  "frontend/src/pages/SalonProfilePage.tsx": "Salon owner profile management form for creating and editing salon information including name, address, contact, and opening hours.",
+  "frontend/src/pages/ServiceManagementPage.tsx": "Service management interface for salon owners to add, edit, and view services with name and price in rupees using dialog forms.",
+  "frontend/src/pages/TimeSlotManagementPage.tsx": "Time slot configuration page for salon owners to add, remove, and save available appointment time slots.",
+  "frontend/src/pages/SalonBookingsDashboard.tsx": "Salon owner bookings dashboard displaying all appointments with customer details, service info, and mark complete functionality.",
+  "frontend/src/pages/AdminDashboard.tsx": "Admin panel with tabs for managing salons and users, displaying lists with delete functionality and access control checks.",
+  "frontend/src/index.css": "Global styles with OKLCH color system using warm earth tones (browns, oranges) for light theme suitable for salon booking app with proper contrast.",
+  "frontend/tailwind.config.js": "Tailwind configuration with warm earth tone color palette, mobile-first responsive settings, and increased base font size for accessibility."
+}

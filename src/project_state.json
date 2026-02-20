@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Baitoo - A salon and barber appointment booking mobile app for Faizabad, India. Two user roles: Salon Owners (manage profiles, services, time slots, bookings) and Customers (discover salons, book appointments, leave reviews). Includes admin panel for management and basic notifications. Target: MVP for 10-20 salons and 100-200 users.",
+  "architectural_notes": [
+    "Mobile app targeting small-town users in Faizabad, India - prioritize simplicity and usability",
+    "Two-sided marketplace: Salon Owners and Customers with distinct feature sets",
+    "Phone number based authentication required for both user types",
+    "Location-based salon discovery for customers",
+    "Service pricing in Indian Rupees (₹)",
+    "Admin panel needed for platform management",
+    "Scalable architecture for future expansion beyond MVP",
+    "Light theme, clean modern UI design approach"
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Salon chair icon illustration for service listings in warm brown tones (salon-chair-icon.dim_64x64.png)\n- Appointment calendar icon in soft orange for booking interface (calendar-icon.dim_64x64.png)\n- Star rating icon in gold for review system (star-icon.dim_48x48.png)\n- Clean hero banner with abstract salon-themed patterns in muted earth tones (hero-banner.dim_1200x400.png)",
+  "existing_features": [
+    {
+      "id": "feature-implement-phone-number-based-authentication-system-for-both-salon-owners-and-customers-with-signup-and-login-flows",
+      "title": "Implement phone number-based authentication system for both salon owners and customers with signup and login flows",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-salon-profile-management-interface-for-salon-owners-to-input-and-edit-shop-name-address-contact-number-and-opening-hours",
+      "title": "Create salon profile management interface for salon owners to input and edit shop name, address, contact number, and opening hours",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-service-management-system-for-salon-owners-to-add-edit-and-display-services-with-names-and-prices-in-indian-rupees-e-g-haircut-150-beard-80-facial-500",
+      "title": "Build service management system for salon owners to add, edit, and display services with names and prices in Indian Rupees (e.g., Haircut ₹150, Beard ₹80, Facial ₹500)",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-time-slot-management-system-for-salon-owners-to-set-and-configure-available-appointment-time-slots",
+      "title": "Implement time slot management system for salon owners to set and configure available appointment time slots",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-bookings-dashboard-for-salon-owners-to-view-all-appointments-with-customer-details-service-and-time-with-ability-to-mark-bookings-as-completed",
+      "title": "Create bookings dashboard for salon owners to view all appointments with customer details, service, and time, with ability to mark bookings as completed",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-customer-facing-salon-discovery-page-showing-list-of-salons-in-faizabad-with-basic-information",
+      "title": "Build customer-facing salon discovery page showing list of salons in Faizabad with basic information",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-detailed-salon-view-page-displaying-complete-salon-information-including-services-with-prices-opening-hours-address-and-contact-number",
+      "title": "Create detailed salon view page displaying complete salon information including services with prices, opening hours, address, and contact number",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-appointment-booking-flow-for-customers-to-select-service-choose-available-time-slot-and-confirm-booking",
+      "title": "Implement appointment booking flow for customers to select service, choose available time slot, and confirm booking",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-booking-confirmation-system-that-displays-confirmation-details-to-customer-after-successful-appointment-booking",
+      "title": "Create booking confirmation system that displays confirmation details to customer after successful appointment booking",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-rating-and-review-system-allowing-customers-to-submit-ratings-and-written-reviews-after-service-completion",
+      "title": "Build rating and review system allowing customers to submit ratings and written reviews after service completion",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-admin-panel-interface-to-view-and-manage-all-salons-and-users-in-the-system",
+      "title": "Create admin panel interface to view and manage all salons and users in the system",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-and-implement-a-simple-clean-modern-mobile-responsive-interface-with-light-theme-easy-navigation-optimized-for-small-town-users-with-focus-on-usability",
+      "title": "Design and implement a simple, clean, modern mobile-responsive interface with light theme, easy navigation optimized for small-town users with focus on usability",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Phone number authentication for salon owners and customers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Salon owner profile creation (shop name, address, contact, hours)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Service management for salon owners (add/edit services with pricing)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Time slot management for salon owners",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Booking list view and completion marking for salon owners",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Customer view of nearby salons list",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Salon details page with services and pricing for customers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Appointment booking flow with time slot selection",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Booking confirmation system",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Rating and review system for customers after service",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Admin panel to manage salons and users",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Basic notification system for booking confirmations",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Baitoo",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

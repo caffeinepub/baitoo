@@ -1,0 +1,432 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Baitoo Salon Appointment Booking App - Frontend Implementation",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Implement phone number-based authentication UI with role selection for salon owners and customers",
+      "acceptanceCriteria": [
+        "Users can sign up with phone number",
+        "Users can log in with phone number",
+        "System distinguishes between salon owner and customer roles",
+        "Authentication state persists across sessions"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/LoginButton.tsx",
+          "operation": "create",
+          "description": "Create login button component using the authorization component with Internet Identity integration. Use useInternetIdentity hook for authentication state management. Verify the authorization component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/auth/ProfileSetupModal.tsx",
+          "operation": "create",
+          "description": "Create modal for first-time user profile setup collecting name, phone number, and user type (salon owner or customer). Use the authorization component to call saveCallerUserProfile after collecting details. Prevent modal flash by checking isFetched state. Verify the authorization component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useGetCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Create custom hook to fetch current user profile using the authorization component's getCallerUserProfile method. Include proper loading states and actor dependency handling to prevent modal flashing. Verify the authorization component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useSaveCallerUserProfile.ts",
+          "operation": "create",
+          "description": "Create mutation hook for saving user profile with name, phone number, and userType using the authorization component's saveCallerUserProfile method. Invalidate user profile query on success. Verify the authorization component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Create salon profile management interface for salon owners to create and edit their salon details",
+      "acceptanceCriteria": [
+        "Salon owners can create a new salon profile",
+        "Profile includes shop name, address, contact number, and opening hours fields",
+        "Salon owners can edit their profile after creation",
+        "Profile data is stored and retrieved correctly"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/salon-owner/SalonProfileForm.tsx",
+          "operation": "create",
+          "description": "Create form component for salon profile creation and editing with fields for shop name, address, contact number, and opening hours. Call backend createOrUpdateSalon method on form submission. Include form validation for all required fields."
+        },
+        {
+          "path": "frontend/src/hooks/useCreateOrUpdateSalon.ts",
+          "operation": "create",
+          "description": "Create mutation hook for creating or updating salon profile using backend createOrUpdateSalon method. Invalidate salon queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useGetSalon.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch salon details by ID using backend getSalon method. Enable salon owners to load their existing profile for editing."
+        },
+        {
+          "path": "frontend/src/pages/SalonProfilePage.tsx",
+          "operation": "create",
+          "description": "Create page for salon owners to manage their profile. Display SalonProfileForm component and show existing salon data if available. Guard this page to salon owners only using userType check from user profile."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Build service management UI for salon owners to add and edit services with prices in rupees",
+      "acceptanceCriteria": [
+        "Salon owners can add new services with name and price",
+        "Services display prices in rupees format",
+        "Salon owners can edit existing services",
+        "Services are associated with the correct salon profile"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/salon-owner/ServiceForm.tsx",
+          "operation": "create",
+          "description": "Create form component for adding and editing services with name and price fields. Format price input and display with rupee symbol (₹). Call backend addService or updateService methods based on context."
+        },
+        {
+          "path": "frontend/src/components/salon-owner/ServiceList.tsx",
+          "operation": "create",
+          "description": "Create component to display list of salon services with edit buttons. Show service name and price formatted with ₹ symbol. Include add new service button and wire to ServiceForm."
+        },
+        {
+          "path": "frontend/src/hooks/useAddService.ts",
+          "operation": "create",
+          "description": "Create mutation hook for adding new service using backend addService method. Accept name and price in paisa (convert rupees to bigint). Invalidate service queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useUpdateService.ts",
+          "operation": "create",
+          "description": "Create mutation hook for updating existing service using backend updateService method. Accept serviceId, name, and price. Invalidate service queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useGetSalonServices.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch services for a salon using backend getSalonServices method. Return services with price formatted for display."
+        },
+        {
+          "path": "frontend/src/pages/ServiceManagementPage.tsx",
+          "operation": "create",
+          "description": "Create page for salon owners to manage their services. Display ServiceList component. Guard this page to salon owners only."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Implement time slot management UI for salon owners to configure available appointment times",
+      "acceptanceCriteria": [
+        "Salon owners can define available time slots",
+        "Time slots can be configured per day",
+        "System prevents double-booking of time slots",
+        "Time slots reflect salon opening hours"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/salon-owner/TimeSlotManager.tsx",
+          "operation": "create",
+          "description": "Create component for managing available time slots. Display current time slots with ability to add or remove slots. Call backend setTimeSlots method to save changes."
+        },
+        {
+          "path": "frontend/src/hooks/useSetTimeSlots.ts",
+          "operation": "create",
+          "description": "Create mutation hook for updating time slots using backend setTimeSlots method. Accept array of time slot strings. Invalidate time slot queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useGetTimeSlots.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch available time slots for a salon using backend getTimeSlots method."
+        },
+        {
+          "path": "frontend/src/pages/TimeSlotManagementPage.tsx",
+          "operation": "create",
+          "description": "Create page for salon owners to configure time slots. Display TimeSlotManager component. Guard this page to salon owners only."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Create bookings dashboard UI for salon owners to view and manage appointments",
+      "acceptanceCriteria": [
+        "Salon owners see a list of all their bookings",
+        "Bookings display customer name, service, date, and time",
+        "Salon owners can mark individual bookings as completed",
+        "Completed bookings are visually distinguished from pending ones"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/salon-owner/BookingsList.tsx",
+          "operation": "create",
+          "description": "Create component to display list of salon bookings. Show customer name (fetch via getUserProfile), service name, time slot, and completion status. Include mark complete button for pending bookings. Use different styling for completed vs pending bookings."
+        },
+        {
+          "path": "frontend/src/hooks/useGetSalonBookings.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch salon owner's bookings using backend getSalonBookings method. Return bookings sorted by timestamp."
+        },
+        {
+          "path": "frontend/src/hooks/useMarkBookingComplete.ts",
+          "operation": "create",
+          "description": "Create mutation hook for marking booking as complete using backend markBookingComplete method. Accept bookingId. Invalidate booking queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useGetUserProfile.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch user profile by principal using backend getUserProfile method. Use for displaying customer names in bookings list."
+        },
+        {
+          "path": "frontend/src/pages/SalonBookingsDashboard.tsx",
+          "operation": "create",
+          "description": "Create dashboard page for salon owners to view and manage bookings. Display BookingsList component. Guard this page to salon owners only."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Build customer-facing salon discovery page showing salons in Faizabad",
+      "acceptanceCriteria": [
+        "Customers see a list of available salons",
+        "Each salon listing shows shop name and basic info",
+        "Listings are limited to Faizabad area",
+        "Customers can tap on a salon to view details"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/customer/SalonCard.tsx",
+          "operation": "create",
+          "description": "Create salon card component displaying salon name, address, and contact info. Make card clickable to navigate to salon detail page. Use generated salon-chair-icon.dim_64x64.png from frontend/public/assets/generated/salon-chair-icon.dim_64x64.png as decorative icon."
+        },
+        {
+          "path": "frontend/src/hooks/useGetAllSalons.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch all salons using backend getAllSalons method. Return list of salons for display in discovery page."
+        },
+        {
+          "path": "frontend/src/pages/SalonDiscoveryPage.tsx",
+          "operation": "create",
+          "description": "Create customer-facing page to browse salons. Display grid of SalonCard components for each salon. Include hero banner using generated hero-banner.dim_1200x400.png from frontend/public/assets/generated/hero-banner.dim_1200x400.png. Guard this page to logged-in customers."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Create detailed salon view page displaying complete information and services",
+      "acceptanceCriteria": [
+        "Salon details page shows all salon profile information",
+        "All services are listed with their prices in rupees",
+        "Opening hours and contact information are clearly displayed",
+        "Page layout is easy to read and navigate"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/customer/SalonDetailView.tsx",
+          "operation": "create",
+          "description": "Create component displaying comprehensive salon information including name, address, contact number, opening hours, and list of services with prices formatted in rupees. Include book appointment button linking to booking flow."
+        },
+        {
+          "path": "frontend/src/pages/SalonDetailPage.tsx",
+          "operation": "create",
+          "description": "Create page for viewing detailed salon information. Accept salonId from route params. Display SalonDetailView component with data fetched using useGetSalon hook. Guard this page to logged-in customers."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Implement appointment booking flow UI for customers to book services",
+      "acceptanceCriteria": [
+        "Customers can select a service from salon's offerings",
+        "System displays only available time slots",
+        "Customers can complete booking in a clear step-by-step flow",
+        "Booking is saved to database with customer and salon information"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/customer/BookingForm.tsx",
+          "operation": "create",
+          "description": "Create multi-step booking form with service selection and time slot picker. Display calendar icon from frontend/public/assets/generated/calendar-icon.dim_64x64.png for time slot selection. Call backend bookAppointment method on submission. Show loading and error states."
+        },
+        {
+          "path": "frontend/src/hooks/useBookAppointment.ts",
+          "operation": "create",
+          "description": "Create mutation hook for creating appointment using backend bookAppointment method. Accept salonId, serviceId, and timeSlot. Return bookingId on success and invalidate booking queries."
+        },
+        {
+          "path": "frontend/src/pages/BookingPage.tsx",
+          "operation": "create",
+          "description": "Create page for appointment booking flow. Accept salonId from route params. Display BookingForm component. Navigate to confirmation page on successful booking. Guard this page to logged-in customers."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Create booking confirmation UI displaying appointment details after successful booking",
+      "acceptanceCriteria": [
+        "Customers see confirmation message immediately after booking",
+        "Confirmation includes salon name, service, date, and time",
+        "Booking details are stored and retrievable",
+        "Confirmation is sent to both customer and salon owner"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/customer/BookingConfirmation.tsx",
+          "operation": "create",
+          "description": "Create confirmation component displaying booking details including salon name, service name, time slot, and booking ID. Show success message and provide navigation to view all bookings."
+        },
+        {
+          "path": "frontend/src/hooks/useGetBooking.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch single booking details using backend getBooking method. Accept bookingId parameter."
+        },
+        {
+          "path": "frontend/src/pages/BookingConfirmationPage.tsx",
+          "operation": "create",
+          "description": "Create page displaying booking confirmation after successful appointment creation. Accept bookingId from route params. Display BookingConfirmation component with fetched booking data. Guard this page to logged-in customers."
+        },
+        {
+          "path": "frontend/src/hooks/useGetCustomerBookings.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch customer's bookings using backend getCustomerBookings method. Return list of bookings for display in customer dashboard."
+        },
+        {
+          "path": "frontend/src/pages/CustomerBookingsPage.tsx",
+          "operation": "create",
+          "description": "Create page for customers to view their appointment history. Display list of bookings with salon name, service, time slot, and completion status. Guard this page to logged-in customers."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Build rating and review UI for customers to submit feedback after service completion",
+      "acceptanceCriteria": [
+        "Customers can only review completed bookings",
+        "Rating includes numeric score and optional written review",
+        "Reviews are associated with the correct salon",
+        "Reviews are displayed on salon detail pages"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/customer/ReviewForm.tsx",
+          "operation": "create",
+          "description": "Create review submission form with star rating input (1-5 stars) and optional comment text area. Use generated star-icon.dim_48x48.png from frontend/public/assets/generated/star-icon.dim_48x48.png for rating display. Call backend submitReview method on submission."
+        },
+        {
+          "path": "frontend/src/components/customer/ReviewsList.tsx",
+          "operation": "create",
+          "description": "Create component to display salon reviews with star ratings, comments, customer names, and timestamps. Use generated star-icon.dim_48x48.png from frontend/public/assets/generated/star-icon.dim_48x48.png for rating display."
+        },
+        {
+          "path": "frontend/src/hooks/useSubmitReview.ts",
+          "operation": "create",
+          "description": "Create mutation hook for submitting review using backend submitReview method. Accept salonId, rating (as bigint), and comment. Invalidate review queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useGetSalonReviews.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch salon reviews using backend getSalonReviews method. Accept salonId parameter. Return reviews sorted by timestamp."
+        },
+        {
+          "path": "frontend/src/components/customer/SalonDetailView.tsx",
+          "operation": "modify",
+          "description": "Add ReviewsList component to salon detail view to display existing reviews below salon information and services."
+        },
+        {
+          "path": "frontend/src/pages/CustomerBookingsPage.tsx",
+          "operation": "modify",
+          "description": "Add review button for completed bookings that opens ReviewForm modal. Only show review option for bookings marked as completed."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Create admin panel UI to view and manage salons and users",
+      "acceptanceCriteria": [
+        "Admin can view list of all registered salons",
+        "Admin can view list of all users (both salon owners and customers)",
+        "Admin has ability to deactivate or remove salons or users if needed",
+        "Admin panel is protected with authentication"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/admin/AdminSalonsList.tsx",
+          "operation": "create",
+          "description": "Create component displaying all salons with name, address, contact info, and delete action button. Show confirmation dialog before deletion."
+        },
+        {
+          "path": "frontend/src/components/admin/AdminUsersList.tsx",
+          "operation": "create",
+          "description": "Create component displaying all users with name, phone number, user type, and delete action button. Show confirmation dialog before deletion."
+        },
+        {
+          "path": "frontend/src/hooks/useAdminGetAllSalons.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch all salons for admin using backend adminGetAllSalons method. Use the authorization component to verify admin access. Verify the authorization component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useAdminGetAllUsers.ts",
+          "operation": "create",
+          "description": "Create query hook to fetch all users for admin using backend adminGetAllUsers method. Use the authorization component to verify admin access. Verify the authorization component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useAdminDeleteSalon.ts",
+          "operation": "create",
+          "description": "Create mutation hook for admin to delete salon using backend adminDeleteSalon method. Accept salonId. Invalidate salon queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useAdminDeleteUser.ts",
+          "operation": "create",
+          "description": "Create mutation hook for admin to delete user using backend adminDeleteUser method. Accept userId principal. Invalidate user queries on success."
+        },
+        {
+          "path": "frontend/src/hooks/useIsCallerAdmin.ts",
+          "operation": "create",
+          "description": "Create query hook to check if current user is admin using backend isCallerAdmin method. Use the authorization component's role checking. Verify the authorization component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/admin/AccessDeniedScreen.tsx",
+          "operation": "create",
+          "description": "Create component displaying access denied message when non-admin users try to access admin panel. Include link to return to main application."
+        },
+        {
+          "path": "frontend/src/pages/AdminDashboard.tsx",
+          "operation": "create",
+          "description": "Create admin dashboard page with tabs for salons and users management. Display AdminSalonsList and AdminUsersList components. Guard this page to admin users only using useIsCallerAdmin hook and show AccessDeniedScreen for unauthorized access. Use the authorization component for admin-only protection. Verify the authorization component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "summary": "Design simple, clean, mobile-responsive interface with light theme optimized for small-town users",
+      "acceptanceCriteria": [
+        "Interface uses light color scheme throughout",
+        "Navigation is intuitive and requires minimal clicks",
+        "UI works well on mobile devices",
+        "Design is clean without unnecessary complexity",
+        "Text and buttons are appropriately sized for easy interaction"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Update global styles with light theme color palette using warm earth tones. Define CSS variables for primary colors (soft orange, warm brown, muted earth tones). Ensure mobile-friendly base font sizes and spacing. Apply light background colors throughout."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Configure Tailwind theme with light color scheme, including warm brown and soft orange accent colors. Set mobile-first breakpoints and increase base font sizes for accessibility. Define spacing scale optimized for touch targets."
+        },
+        {
+          "path": "frontend/src/components/layout/AppLayout.tsx",
+          "operation": "create",
+          "description": "Create main application layout component with simple navigation for customers (salon discovery, my bookings), salon owners (profile, services, time slots, bookings), and admin (admin panel). Include LoginButton component in header. Use mobile-friendly navigation pattern."
+        },
+        {
+          "path": "frontend/src/components/layout/MobileNav.tsx",
+          "operation": "create",
+          "description": "Create mobile-optimized navigation component with bottom tab bar for primary actions. Include large touch-friendly buttons. Show role-specific navigation items based on user profile."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire AppLayout component as main wrapper for all routes. Configure React Router with routes for all pages: salon discovery, salon detail, booking, confirmation, customer bookings, salon profile, service management, time slot management, salon bookings dashboard, and admin dashboard. Apply authentication guards using the authorization component's identity checks. Set default route based on user role after login. Verify the authorization component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}
