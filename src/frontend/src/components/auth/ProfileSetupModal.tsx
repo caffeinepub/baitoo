@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { useSaveCallerUserProfile } from '../../hooks/useQueries';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../ui/dialog';
 import { Button } from '../ui/button';
@@ -8,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 import type { UserProfile } from '../../backend';
 
 export default function ProfileSetupModal() {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [userType, setUserType] = useState<'customer' | 'salon_owner'>('customer');
@@ -28,6 +30,13 @@ export default function ProfileSetupModal() {
 
     try {
       await saveProfile.mutateAsync(profile);
+      
+      // Redirect based on user type
+      if (userType === 'salon_owner') {
+        navigate({ to: '/salon-profile' });
+      } else {
+        navigate({ to: '/salons' });
+      }
     } catch (error) {
       console.error('Failed to save profile:', error);
     }

@@ -1,6 +1,9 @@
-import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
 import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from './hooks/useQueries';
+import { usePushNotifications } from './hooks/usePushNotifications';
+import { useReminderChecker } from './hooks/useReminderChecker';
+import { useCustomerNotifications } from './hooks/useCustomerNotifications';
 import AppLayout from './components/layout/AppLayout';
 import ProfileSetupModal from './components/auth/ProfileSetupModal';
 import SalonDiscoveryPage from './pages/SalonDiscoveryPage';
@@ -14,10 +17,21 @@ import TimeSlotManagementPage from './pages/TimeSlotManagementPage';
 import SalonBookingsDashboard from './pages/SalonBookingsDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import WelcomePage from './pages/WelcomePage';
+import CustomerProfilePage from './pages/CustomerProfilePage';
+import SalonReviewsPage from './pages/SalonReviewsPage';
 
 function RootComponent() {
   const { identity, isInitializing } = useInternetIdentity();
   const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
+  
+  // Initialize push notifications for authenticated users
+  usePushNotifications();
+  
+  // Initialize reminder checker for salon owners
+  useReminderChecker();
+  
+  // Initialize customer notifications
+  useCustomerNotifications();
   
   const isAuthenticated = !!identity;
   const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
@@ -83,9 +97,15 @@ const customerBookingsRoute = createRoute({
   component: CustomerBookingsPage,
 });
 
+const customerProfileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/customer-profile',
+  component: CustomerProfilePage,
+});
+
 const salonProfileRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/salon/profile',
+  path: '/salon-profile',
   component: SalonProfilePage,
 });
 
@@ -107,6 +127,12 @@ const salonBookingsRoute = createRoute({
   component: SalonBookingsDashboard,
 });
 
+const salonReviewsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/salon-reviews',
+  component: SalonReviewsPage,
+});
+
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/admin',
@@ -120,10 +146,12 @@ const routeTree = rootRoute.addChildren([
   bookingRoute,
   bookingConfirmationRoute,
   customerBookingsRoute,
+  customerProfileRoute,
   salonProfileRoute,
   serviceManagementRoute,
   timeSlotManagementRoute,
   salonBookingsRoute,
+  salonReviewsRoute,
   adminRoute,
 ]);
 

@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from '@tanstack/react-router';
 import { useGetSalon, useGetSalonServices, useGetSalonReviews, useGetUserProfile } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { Separator } from '../components/ui/separator';
-import { MapPin, Phone, Clock, Star } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { MapPin, Phone, Clock, Star, X } from 'lucide-react';
 
 export default function SalonDetailPage() {
   const { salonId } = useParams({ from: '/salons/$salonId' });
@@ -135,25 +136,57 @@ export default function SalonDetailPage() {
 
 function ReviewItem({ review }: { review: any }) {
   const { data: userProfile } = useGetUserProfile(review.customer);
+  const [showImageDialog, setShowImageDialog] = useState(false);
+
+  const photoUrl = review.photo?.getDirectURL();
 
   return (
-    <div className="border-b last:border-0 pb-4 last:pb-0">
-      <div className="flex items-center gap-2 mb-2">
-        <div className="flex items-center">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <Star
-              key={star}
-              className={`h-4 w-4 ${
-                star <= Number(review.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-              }`}
-            />
-          ))}
+    <>
+      <div className="border-b last:border-0 pb-4 last:pb-0">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`h-4 w-4 ${
+                  star <= Number(review.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-sm font-medium">{userProfile?.name || 'Customer'}</span>
         </div>
-        <span className="text-sm font-medium">{userProfile?.name || 'Customer'}</span>
+        {review.comment && (
+          <p className="text-sm text-muted-foreground mb-2">{review.comment}</p>
+        )}
+        {photoUrl && (
+          <div className="mt-2">
+            <img
+              src={photoUrl}
+              alt="Review photo"
+              className="w-32 h-32 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setShowImageDialog(true)}
+            />
+          </div>
+        )}
       </div>
-      {review.comment && (
-        <p className="text-sm text-muted-foreground">{review.comment}</p>
+
+      {photoUrl && (
+        <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
+          <DialogContent className="sm:max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Review Photo</DialogTitle>
+            </DialogHeader>
+            <div className="relative">
+              <img
+                src={photoUrl}
+                alt="Review photo full size"
+                className="w-full h-auto rounded-lg"
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
-    </div>
+    </>
   );
 }

@@ -1,23 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useGetSalon, useCreateOrUpdateSalon } from '../hooks/useQueries';
+import { useGetSalon, useCreateOrUpdateSalon, useGetCallerUserProfile, useUpdateUserProfile, useUploadProfilePhoto } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
+import ImageUploadField from '../components/shared/ImageUploadField';
 import { toast } from 'sonner';
+import { ExternalBlob } from '../backend';
 
 export default function SalonProfilePage() {
   const { identity } = useInternetIdentity();
   const salonId = identity?.getPrincipal().toString();
   const { data: salon } = useGetSalon(salonId);
+  const { data: userProfile } = useGetCallerUserProfile();
   const createOrUpdateSalon = useCreateOrUpdateSalon();
+  const updateUserProfile = useUpdateUserProfile();
+  const uploadProfilePhoto = useUploadProfilePhoto();
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [contactNumber, setContactNumber] = useState('');
   const [openingHours, setOpeningHours] = useState('');
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
 
   useEffect(() => {
     if (salon) {
@@ -37,17 +43,38 @@ export default function SalonProfilePage() {
     }
 
     try {
+      // Upload profile photo if selected
+      if (profilePhoto) {
+        const arrayBuffer = await profilePhoto.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        const blob = ExternalBlob.fromBytes(uint8Array);
+        await uploadProfilePhoto.mutateAsync(blob);
+      }
+
+      // Update salon profile
       await createOrUpdateSalon.mutateAsync({
         name: name.trim(),
         address: address.trim(),
         contactNumber: contactNumber.trim(),
         openingHours: openingHours.trim(),
       });
+
+      // Update user profile if needed
+      if (userProfile) {
+        await updateUserProfile.mutateAsync({
+          name: userProfile.name,
+          phoneNumber: userProfile.phoneNumber,
+        });
+      }
+
       toast.success('Salon profile saved successfully!');
+      setProfilePhoto(null);
     } catch (error: any) {
       toast.error(error.message || 'Failed to save salon profile');
     }
   };
+
+  const currentPhotoUrl = userProfile?.profilePhoto?.getDirectURL();
 
   return (
     <div className="container px-4 py-8 max-w-2xl mx-auto">
@@ -59,6 +86,12 @@ export default function SalonProfilePage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <ImageUploadField
+              label="Profile Photo (Shop Logo or Owner Photo)"
+              currentImageUrl={currentPhotoUrl}
+              onChange={setProfilePhoto}
+            />
+
             <div className="space-y-2">
               <Label htmlFor="name">Shop Name</Label>
               <Input
@@ -105,8 +138,12 @@ export default function SalonProfilePage() {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={createOrUpdateSalon.isPending}>
-              {createOrUpdateSalon.isPending ? 'Saving...' : 'Save Profile'}
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={createOrUpdateSalon.isPending || uploadProfilePhoto.isPending}
+            >
+              {(createOrUpdateSalon.isPending || uploadProfilePhoto.isPending) ? 'Saving...' : 'Save Profile'}
             </Button>
           </form>
         </CardContent>

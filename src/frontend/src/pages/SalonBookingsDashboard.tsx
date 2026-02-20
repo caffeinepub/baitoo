@@ -2,6 +2,7 @@ import { useGetSalonBookings, useGetUserProfile, useGetSalonServices, useMarkBoo
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { BookingStatus } from '../backend';
 import { toast } from 'sonner';
 
 export default function SalonBookingsDashboard() {
@@ -55,26 +56,40 @@ function BookingCard({ booking }: { booking: any }) {
     }
   };
 
+  const getStatusBadge = () => {
+    switch (booking.status) {
+      case BookingStatus.pending:
+        return <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>;
+      case BookingStatus.confirmed:
+        return <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">Confirmed</Badge>;
+      case BookingStatus.cancelled:
+        return <Badge variant="destructive">Cancelled</Badge>;
+      default:
+        return <Badge variant="secondary">Unknown</Badge>;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg">Booking #{booking.id.toString()}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Customer: {customer?.name || 'Loading...'}
-            </p>
+            <CardTitle className="text-lg">{customer?.name || 'Loading...'}</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">Booking #{booking.id.toString()}</p>
           </div>
-          <Badge variant={booking.completed ? 'default' : 'secondary'}>
-            {booking.completed ? 'Completed' : 'Pending'}
-          </Badge>
+          <div className="flex flex-col items-end gap-2">
+            {getStatusBadge()}
+            {booking.completed && (
+              <Badge variant="outline" className="bg-blue-50 text-blue-700">Completed</Badge>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-2 mb-4">
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Service:</span>
-            <span className="font-medium">{service?.name}</span>
+            <span className="font-medium">{service?.name || 'Loading...'}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Time:</span>
@@ -82,16 +97,24 @@ function BookingCard({ booking }: { booking: any }) {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-muted-foreground">Phone:</span>
-            <span className="font-medium">{customer?.phoneNumber}</span>
+            <span className="font-medium">{customer?.phoneNumber || 'N/A'}</span>
           </div>
         </div>
-        {!booking.completed && (
+
+        {booking.status === BookingStatus.cancelled && booking.cancellationReason && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm font-medium text-red-800 mb-1">Cancellation Reason:</p>
+            <p className="text-sm text-red-700">{booking.cancellationReason}</p>
+          </div>
+        )}
+
+        {booking.status === BookingStatus.confirmed && !booking.completed && (
           <Button 
             onClick={handleMarkComplete} 
-            className="w-full"
             disabled={markComplete.isPending}
+            className="w-full"
           >
-            {markComplete.isPending ? 'Marking...' : 'Mark as Completed'}
+            {markComplete.isPending ? 'Marking Complete...' : 'Mark as Completed'}
           </Button>
         )}
       </CardContent>

@@ -6,9 +6,11 @@ import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog';
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
-import { Star } from 'lucide-react';
+import { Star, X } from 'lucide-react';
+import { BookingStatus, ExternalBlob } from '../backend';
 import { toast } from 'sonner';
 import { Principal } from '@dfinity/principal';
+import ImageUploadField from '../components/shared/ImageUploadField';
 
 export default function CustomerBookingsPage() {
   const { data: bookings, isLoading } = useGetCustomerBookings();
@@ -50,6 +52,19 @@ function BookingCard({ booking }: { booking: any }) {
   const { data: services } = useGetSalonServices(booking.salonId.toString());
   const service = services?.find(s => s.id === booking.serviceId);
 
+  const getStatusBadge = () => {
+    switch (booking.status) {
+      case BookingStatus.pending:
+        return <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>;
+      case BookingStatus.confirmed:
+        return <Badge variant="default" className="bg-green-100 text-green-800 hover:bg-green-100">Confirmed</Badge>;
+      case BookingStatus.cancelled:
+        return <Badge variant="destructive">Cancelled</Badge>;
+      default:
+        return <Badge variant="secondary">Unknown</Badge>;
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -58,9 +73,12 @@ function BookingCard({ booking }: { booking: any }) {
             <CardTitle className="text-lg">{salon?.name}</CardTitle>
             <p className="text-sm text-muted-foreground mt-1">Booking #{booking.id.toString()}</p>
           </div>
-          <Badge variant={booking.completed ? 'default' : 'secondary'}>
-            {booking.completed ? 'Completed' : 'Pending'}
-          </Badge>
+          <div className="flex flex-col items-end gap-2">
+            {getStatusBadge()}
+            {booking.completed && (
+              <Badge variant="outline" className="bg-blue-50 text-blue-700">Completed</Badge>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -74,7 +92,15 @@ function BookingCard({ booking }: { booking: any }) {
             <span className="font-medium">{booking.timeSlot}</span>
           </div>
         </div>
-        {booking.completed && (
+
+        {booking.status === BookingStatus.cancelled && booking.cancellationReason && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm font-medium text-red-800 mb-1">Cancellation Reason:</p>
+            <p className="text-sm text-red-700">{booking.cancellationReason}</p>
+          </div>
+        )}
+
+        {booking.completed && booking.status !== BookingStatus.cancelled && (
           <ReviewDialog salonId={booking.salonId} salonName={salon?.name || ''} />
         )}
       </CardContent>
@@ -85,27 +111,38 @@ function BookingCard({ booking }: { booking: any }) {
 function ReviewDialog({ salonId, salonName }: { salonId: Principal; salonName: string }) {
   const [open, setOpen] = useState(false);
   const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [photo, setPhoto] = useState<File | null>(null);
   const submitReview = useSubmitReview();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     if (rating === 0) {
       toast.error('Please select a rating');
       return;
     }
 
     try {
+      let photoBlob: ExternalBlob | null = null;
+      
+      if (photo) {
+        const arrayBuffer = await photo.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        photoBlob = ExternalBlob.fromBytes(uint8Array);
+      }
+
       await submitReview.mutateAsync({
         salonId,
         rating: BigInt(rating),
         comment: comment.trim(),
+        photo: photoBlob,
       });
+
       toast.success('Review submitted successfully!');
       setOpen(false);
       setRating(0);
       setComment('');
+      setPhoto(null);
     } catch (error: any) {
       toast.error(error.message || 'Failed to submit review');
     }
@@ -118,24 +155,28 @@ function ReviewDialog({ salonId, salonName }: { salonId: Principal; salonName: s
           Leave a Review
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Review {salonName}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label>Rating</Label>
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
                   key={star}
                   type="button"
                   onClick={() => setRating(star)}
+                  onMouseEnter={() => setHoveredRating(star)}
+                  onMouseLeave={() => setHoveredRating(0)}
                   className="focus:outline-none"
                 >
                   <Star
-                    className={`h-8 w-8 ${
-                      star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                    className={`h-8 w-8 transition-colors ${
+                      star <= (hoveredRating || rating)
+                        ? 'fill-yellow-400 text-yellow-400'
+                        : 'text-gray-300'
                     }`}
                   />
                 </button>
@@ -144,7 +185,7 @@ function ReviewDialog({ salonId, salonName }: { salonId: Principal; salonName: s
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="comment">Comment (Optional)</Label>
+            <Label htmlFor="comment">Your Review</Label>
             <Textarea
               id="comment"
               placeholder="Share your experience..."
@@ -154,10 +195,19 @@ function ReviewDialog({ salonId, salonName }: { salonId: Principal; salonName: s
             />
           </div>
 
-          <Button type="submit" className="w-full" disabled={submitReview.isPending || rating === 0}>
+          <ImageUploadField
+            label="Add Photo (Optional)"
+            onChange={setPhoto}
+          />
+
+          <Button
+            onClick={handleSubmit}
+            disabled={submitReview.isPending || rating === 0}
+            className="w-full"
+          >
             {submitReview.isPending ? 'Submitting...' : 'Submit Review'}
           </Button>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,18 +1,17 @@
 # Specification
 
 ## Summary
-**Goal:** Build Baitoo, a salon appointment booking application for Faizabad with dual user roles (salon owners and customers), phone-based authentication, and admin management capabilities.
+**Goal:** Add comprehensive profile system with photo uploads for users and enable photo uploads in customer reviews.
 
 **Planned changes:**
-- Implement phone number authentication for salon owners, customers, and admins
-- Create salon profile management for owners (shop name, address, contact, hours)
-- Build service management system with prices in Indian Rupees
-- Implement time slot configuration and booking system
-- Create salon owner dashboard to view and manage bookings
-- Build customer interface to discover salons, view details, and book appointments
-- Add booking confirmation system
-- Implement rating and review system for completed services
-- Create admin panel to manage salons and users
-- Design simple, clean, mobile-responsive UI with light theme optimized for small-town users
+- Add profile photo storage and update capabilities to backend User type
+- Add photo upload field to Review type in backend
+- Remove ProfileSetupModal from staying open after registration, redirect to appropriate dashboard
+- Add profile icon in top-right corner of header that opens user profile page
+- Create salon owner profile page with photo upload, salon details editing, and save functionality
+- Create customer profile page with photo upload, personal details editing, booking history, and save functionality
+- Add photo upload option to review submission dialog with gallery and camera support
+- Display review photos in salon detail page reviews section with click-to-enlarge
+- Add reviews section to salon owner dashboard showing all reviews with photos
 
-**User-visible outcome:** Salon owners in Faizabad can create profiles, list services with prices, manage time slots, and track bookings. Customers can browse local salons, view services and prices, book appointments at available time slots, receive confirmations, and leave reviews after service completion. Admins can oversee all salons and users in the system.
+**User-visible outcome:** Users can upload and edit profile photos, customers can attach photos to their reviews showing haircut results, and both salon owners and customers can view review photos. Profile access is available via header icon, and users are properly redirected to dashboards after registration.

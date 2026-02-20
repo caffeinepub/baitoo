@@ -12,18 +12,39 @@ import type { Principal } from '@icp-sdk/core/principal';
 
 export interface Booking {
   'id' : bigint,
+  'status' : BookingStatus,
   'customer' : Principal,
+  'cancellationReason' : [] | [string],
   'completed' : boolean,
   'timestamp' : Time,
   'serviceId' : bigint,
+  'lastReminderSent' : [] | [Time],
   'timeSlot' : string,
   'salonId' : Principal,
 }
+export type BookingStatus = { 'cancelled' : null } |
+  { 'pending' : null } |
+  { 'confirmed' : null };
+export type DeliveryStatus = { 'pending' : null } |
+  { 'delivered' : null } |
+  { 'failed' : null };
+export type ExternalBlob = Uint8Array;
+export interface NotificationRecord {
+  'bookingId' : bigint,
+  'notificationType' : NotificationType,
+  'recipient' : Principal,
+  'deliveryStatus' : DeliveryStatus,
+  'timestamp' : Time,
+}
+export type NotificationType = { 'bookingConfirmed' : null } |
+  { 'bookingReminder' : null } |
+  { 'bookingCancelled' : null };
 export interface Review {
   'customer' : Principal,
   'comment' : string,
   'timestamp' : Time,
   'rating' : bigint,
+  'photo' : [] | [ExternalBlob],
 }
 export interface Salon {
   'id' : Principal,
@@ -39,12 +60,39 @@ export type Time = bigint;
 export interface UserProfile {
   'userType' : string,
   'name' : string,
+  'profilePhoto' : [] | [ExternalBlob],
   'phoneNumber' : string,
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
+export interface _CaffeineStorageCreateCertificateResult {
+  'method' : string,
+  'blob_hash' : string,
+}
+export interface _CaffeineStorageRefillInformation {
+  'proposed_top_up_amount' : [] | [bigint],
+}
+export interface _CaffeineStorageRefillResult {
+  'success' : [] | [boolean],
+  'topped_up_amount' : [] | [bigint],
+}
 export interface _SERVICE {
+  '_caffeineStorageBlobIsLive' : ActorMethod<[Uint8Array], boolean>,
+  '_caffeineStorageBlobsToDelete' : ActorMethod<[], Array<Uint8Array>>,
+  '_caffeineStorageConfirmBlobDeletion' : ActorMethod<
+    [Array<Uint8Array>],
+    undefined
+  >,
+  '_caffeineStorageCreateCertificate' : ActorMethod<
+    [string],
+    _CaffeineStorageCreateCertificateResult
+  >,
+  '_caffeineStorageRefillCashier' : ActorMethod<
+    [[] | [_CaffeineStorageRefillInformation]],
+    _CaffeineStorageRefillResult
+  >,
+  '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'addService' : ActorMethod<[string, bigint], undefined>,
   'adminDeleteSalon' : ActorMethod<[Principal], undefined>,
@@ -54,6 +102,16 @@ export interface _SERVICE {
   'adminGetAllUsers' : ActorMethod<[], Array<[Principal, UserProfile]>>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'bookAppointment' : ActorMethod<[Principal, bigint, string], bigint>,
+  'cancelBooking' : ActorMethod<[bigint, string], undefined>,
+  'checkPendingBookingsForReminders' : ActorMethod<
+    [],
+    Array<[Principal, bigint]>
+  >,
+  'confirmBooking' : ActorMethod<[bigint], undefined>,
+  'createNotification' : ActorMethod<
+    [Principal, NotificationType, bigint],
+    bigint
+  >,
   'createOrUpdateSalon' : ActorMethod<
     [string, string, string, string],
     undefined
@@ -63,6 +121,10 @@ export interface _SERVICE {
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCustomerBookings' : ActorMethod<[], Array<Booking>>,
+  'getNotificationsForUser' : ActorMethod<
+    [Principal],
+    Array<NotificationRecord>
+  >,
   'getSalon' : ActorMethod<[Principal], [] | [Salon]>,
   'getSalonBookings' : ActorMethod<[], Array<Booking>>,
   'getSalonReviews' : ActorMethod<[Principal], Array<Review>>,
@@ -71,10 +133,15 @@ export interface _SERVICE {
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'markBookingComplete' : ActorMethod<[bigint], undefined>,
-  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setTimeSlots' : ActorMethod<[Array<string>], undefined>,
-  'submitReview' : ActorMethod<[Principal, bigint, string], undefined>,
+  'submitReview' : ActorMethod<
+    [Principal, bigint, string, [] | [ExternalBlob]],
+    undefined
+  >,
+  'updateNotificationStatus' : ActorMethod<[bigint, DeliveryStatus], boolean>,
   'updateService' : ActorMethod<[bigint, string, bigint], undefined>,
+  'updateUserProfile' : ActorMethod<[string, string], undefined>,
+  'uploadProfilePhoto' : ActorMethod<[ExternalBlob], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

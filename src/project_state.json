@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 7,
   "summary": "Baitoo - A salon and barber appointment booking mobile app for Faizabad, India. Two user roles: Salon Owners (manage profiles, services, time slots, bookings) and Customers (discover salons, book appointments, leave reviews). Includes admin panel for management and basic notifications. Target: MVP for 10-20 salons and 100-200 users.",
   "architectural_notes": [
     "Mobile app targeting small-town users in Faizabad, India - prioritize simplicity and usability",
@@ -10,11 +10,13 @@
     "Service pricing in Indian Rupees (₹)",
     "Admin panel needed for platform management",
     "Scalable architecture for future expansion beyond MVP",
-    "Light theme, clean modern UI design approach"
+    "Light theme, clean modern UI design approach",
+    "Real-time push notification system required (works even when app is closed)",
+    "Booking statuses: Pending / Confirmed / Cancelled"
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Salon chair icon illustration for service listings in warm brown tones (salon-chair-icon.dim_64x64.png)\n- Appointment calendar icon in soft orange for booking interface (calendar-icon.dim_64x64.png)\n- Star rating icon in gold for review system (star-icon.dim_48x48.png)\n- Clean hero banner with abstract salon-themed patterns in muted earth tones (hero-banner.dim_1200x400.png)",
+  "imageRequirements": "## Required Images\n- Simple user profile avatar icon for header, circular silhouette design (profile-icon.dim_40x40.png)",
   "existing_features": [
     {
       "id": "feature-implement-phone-number-based-authentication-system-for-both-salon-owners-and-customers-with-signup-and-login-flows",
@@ -111,6 +113,118 @@
         "REQ-12"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-implement-a-frontend-push-notification-system-using-the-web-push-api-with-service-worker-registration-permission-request-flow-on-app-load-for-authenticated-users-and-token-storage-in-backend-for-each-user-principal",
+      "title": "Implement a frontend push notification system using the Web Push API with service worker registration, permission request flow on app load for authenticated users, and token storage in backend for each user principal",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-notification-display-component-for-salon-owners-that-shows-new-booking-notifications-with-customer-name-service-name-and-time-slot-and-includes-confirm-and-cancel-action-buttons-that-call-the-backend-confirm-cancel-functions-and-refresh-the-bookings-list",
+      "title": "Create a notification display component for salon owners that shows new booking notifications with customer name, service name, and time slot, and includes Confirm and Cancel action buttons that call the backend confirm/cancel functions and refresh the bookings list",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-notification-bell-icon-to-the-salon-owner-dashboard-header-that-displays-a-badge-count-of-unread-notifications-and-opens-a-dropdown-panel-showing-recent-booking-notifications-with-inline-confirm-cancel-actions",
+      "title": "Add a notification bell icon to the salon owner dashboard header that displays a badge count of unread notifications and opens a dropdown panel showing recent booking notifications with inline Confirm/Cancel actions",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-salonbookingsdashboard-to-display-booking-status-badges-pending-in-yellow-confirmed-in-green-cancelled-in-red-and-only-show-the-mark-as-completed-button-for-bookings-with-confirmed-status",
+      "title": "Update the SalonBookingsDashboard to display booking status badges (Pending in yellow, Confirmed in green, Cancelled in red) and only show the Mark as Completed button for bookings with Confirmed status",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-notification-display-component-for-customers-that-shows-booking-confirmation-notifications-when-owner-confirms-and-cancellation-notifications-with-the-cancellation-reason-when-owner-cancels",
+      "title": "Create a notification display component for customers that shows booking confirmation notifications when owner confirms, and cancellation notifications with the cancellation reason when owner cancels",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-customerbookingspage-to-display-booking-status-badges-and-show-cancellation-reason-text-for-cancelled-bookings-and-disable-the-review-submission-dialog-for-cancelled-bookings",
+      "title": "Update the CustomerBookingsPage to display booking status badges and show cancellation reason text for cancelled bookings, and disable the review submission dialog for cancelled bookings",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-periodic-background-task-in-the-frontend-using-setinterval-when-app-is-active-that-calls-the-backend-reminder-check-function-every-minute-and-triggers-reminder-push-notifications-for-salon-owners-with-bookings-requiring-reminders",
+      "title": "Implement a periodic background task in the frontend (using setInterval when app is active) that calls the backend reminder check function every minute and triggers reminder push notifications for salon owners with bookings requiring reminders",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-profilesetupmodal-from-displaying-as-the-main-screen-after-registration-and-profile-creation-ensuring-users-are-redirected-to-their-appropriate-dashboard-salon-owner-or-customer-instead-of-staying-on-the-profile-setup-page",
+      "title": "Remove ProfileSetupModal from displaying as the main screen after registration and profile creation, ensuring users are redirected to their appropriate dashboard (salon owner or customer) instead of staying on the profile setup page",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-small-profile-icon-in-the-top-right-corner-of-the-applayout-header-that-is-always-visible-for-authenticated-users-and-opens-the-user-s-profile-page-when-clicked",
+      "title": "Add a small profile icon in the top-right corner of the AppLayout header that is always visible for authenticated users and opens the user's profile page when clicked",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-comprehensive-salon-owner-profile-page-that-displays-and-allows-editing-of-profile-photo-salon-name-address-contact-number-opening-hours-with-a-save-changes-button-and-includes-an-image-upload-component-supporting-gallery-and-camera-access",
+      "title": "Create a comprehensive salon owner profile page that displays and allows editing of profile photo, salon name, address, contact number, opening hours with a save changes button, and includes an image upload component supporting gallery and camera access",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-comprehensive-customer-profile-page-that-displays-and-allows-editing-of-profile-photo-name-phone-number-with-a-save-changes-button-displays-booking-history-with-past-and-upcoming-bookings-and-includes-an-image-upload-component-supporting-gallery-and-camera-access",
+      "title": "Create a comprehensive customer profile page that displays and allows editing of profile photo, name, phone number, with a save changes button, displays booking history with past and upcoming bookings, and includes an image upload component supporting gallery and camera access",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-customerbookingspage-review-submission-dialog-to-include-a-photo-upload-option-allowing-customers-to-upload-photos-of-their-haircut-results-supporting-gallery-and-camera-access-and-send-the-photo-data-along-with-rating-and-text-to-the-backend-submitreview-function",
+      "title": "Update CustomerBookingsPage review submission dialog to include a photo upload option allowing customers to upload photos of their haircut results, supporting gallery and camera access, and send the photo data along with rating and text to the backend submitReview function",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-salondetailpage-reviews-section-to-display-customer-review-photos-alongside-ratings-and-text-reviews-showing-photo-thumbnails-that-can-be-clicked-to-view-full-size",
+      "title": "Update SalonDetailPage reviews section to display customer review photos alongside ratings and text reviews, showing photo thumbnails that can be clicked to view full size",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-reviews-section-to-the-salon-owner-dashboard-that-displays-all-reviews-for-the-salon-including-star-ratings-text-reviews-customer-names-and-uploaded-review-photos-with-photo-viewing-capability",
+      "title": "Add a reviews section to the salon owner dashboard that displays all reviews for the salon including star ratings, text reviews, customer names, and uploaded review photos with photo viewing capability",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -181,9 +295,135 @@
       "status": "pending"
     },
     {
-      "id": "AR-12",
-      "summary": "Basic notification system for booking confirmations",
+      "id": "AR-13",
+      "summary": "Push notification for salon owner when customer books (with sound, customer name, service, time)",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Notification action buttons (Confirm/Cancel) for salon owner",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Booking confirmation/cancellation from notification and dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Customer confirmation notification when owner confirms booking",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Customer cancellation notification with reason when owner cancels",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Reminder notification to owner if no response within 5 minutes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Booking status tracking (Pending/Confirmed/Cancelled)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Extend the backend Booking type to include a status field that can be 'Pending', 'Confirmed', or 'Cancelled', and add optional fields for cancellationReason (Text) and lastReminderSent (Int timestamp)",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Add backend functions for salon owners to confirm a booking (confirmBooking) and cancel a booking with a reason (cancelBooking), updating the booking status and storing the cancellation reason when applicable",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Create a backend notification log system that stores notification events with fields for recipientPrincipal, notificationType, bookingId, timestamp, and deliveryStatus, and add functions to create and query notification records",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Add a backend function to check for pending bookings older than 5 minutes that have not received a reminder, mark them with a reminder timestamp, and return the list of bookings that need reminder notifications",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Profile icon in header that opens profile page on click",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-25",
+      "summary": "Profile photo upload for salon owners and customers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Edit profile functionality with save changes button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Customer profile page with photo, name, phone, and booking history",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Photo upload option in customer reviews (haircut result photos)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Display review photos under salon reviews section",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Salon owner dashboard view for all reviews with photos",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Add profile photo field to backend User type and implement uploadProfilePhoto and updateUserProfile functions to handle profile photo storage and user profile updates including name and phone",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Add photo upload field to Review type in backend and update submitReview function to accept and store optional review photos submitted by customers",
+      "reqIds": [
+        "REQ-25"
+      ],
       "status": "pending"
     }
   ],

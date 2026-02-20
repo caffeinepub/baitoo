@@ -1,19 +1,31 @@
 import { ReactNode } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { useInternetIdentity } from '../../hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from '../../hooks/useQueries';
 import LoginButton from '../auth/LoginButton';
+import NotificationBell from '../notifications/NotificationBell';
 import MobileNav from './MobileNav';
 import { Link } from '@tanstack/react-router';
+import { User } from 'lucide-react';
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {
+  const navigate = useNavigate();
   const { identity } = useInternetIdentity();
   const { data: userProfile } = useGetCallerUserProfile();
   
   const isAuthenticated = !!identity;
+
+  const handleProfileClick = () => {
+    if (userProfile?.userType === 'salon_owner') {
+      navigate({ to: '/salon-profile' });
+    } else {
+      navigate({ to: '/customer-profile' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -22,7 +34,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <Link to="/" className="flex items-center space-x-2">
             <div className="text-2xl font-bold text-primary">Baitoo</div>
           </Link>
-          <LoginButton />
+          <div className="flex items-center gap-2">
+            {isAuthenticated && userProfile && (
+              <button
+                onClick={handleProfileClick}
+                className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors"
+                aria-label="View profile"
+              >
+                <User className="h-5 w-5 text-primary" />
+              </button>
+            )}
+            {isAuthenticated && <NotificationBell />}
+            <LoginButton />
+          </div>
         </div>
       </header>
 

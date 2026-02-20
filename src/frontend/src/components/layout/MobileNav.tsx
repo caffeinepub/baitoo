@@ -1,5 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router';
-import { Home, Calendar, Store, Settings, Shield } from 'lucide-react';
+import { Home, Calendar, Store, Settings, Shield, Star } from 'lucide-react';
 import { useIsCallerAdmin } from '../../hooks/useQueries';
 
 interface MobileNavProps {
@@ -20,9 +20,10 @@ export default function MobileNav({ userType }: MobileNavProps) {
   ];
 
   const salonOwnerLinks = [
-    { to: '/salon/profile', icon: Store, label: 'Profile' },
+    { to: '/salon-profile', icon: Store, label: 'Profile' },
     { to: '/salon/services', icon: Settings, label: 'Services' },
     { to: '/salon/bookings', icon: Calendar, label: 'Bookings' },
+    { to: '/salon-reviews', icon: Star, label: 'Reviews' },
   ];
 
   const links = isCustomer ? customerLinks : isSalonOwner ? salonOwnerLinks : [];

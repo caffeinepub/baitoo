@@ -8,13 +8,32 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const _CaffeineStorageCreateCertificateResult = IDL.Record({
+  'method' : IDL.Text,
+  'blob_hash' : IDL.Text,
+});
+export const _CaffeineStorageRefillInformation = IDL.Record({
+  'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const _CaffeineStorageRefillResult = IDL.Record({
+  'success' : IDL.Opt(IDL.Bool),
+  'topped_up_amount' : IDL.Opt(IDL.Nat),
+});
+export const BookingStatus = IDL.Variant({
+  'cancelled' : IDL.Null,
+  'pending' : IDL.Null,
+  'confirmed' : IDL.Null,
+});
 export const Time = IDL.Int;
 export const Booking = IDL.Record({
   'id' : IDL.Nat,
+  'status' : BookingStatus,
   'customer' : IDL.Principal,
+  'cancellationReason' : IDL.Opt(IDL.Text),
   'completed' : IDL.Bool,
   'timestamp' : Time,
   'serviceId' : IDL.Nat,
+  'lastReminderSent' : IDL.Opt(Time),
   'timeSlot' : IDL.Text,
   'salonId' : IDL.Principal,
 });
@@ -32,9 +51,11 @@ export const Salon = IDL.Record({
   'contactNumber' : IDL.Text,
   'services' : IDL.Vec(Service),
 });
+export const ExternalBlob = IDL.Vec(IDL.Nat8);
 export const UserProfile = IDL.Record({
   'userType' : IDL.Text,
   'name' : IDL.Text,
+  'profilePhoto' : IDL.Opt(ExternalBlob),
   'phoneNumber' : IDL.Text,
 });
 export const UserRole = IDL.Variant({
@@ -42,14 +63,58 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const NotificationType = IDL.Variant({
+  'bookingConfirmed' : IDL.Null,
+  'bookingReminder' : IDL.Null,
+  'bookingCancelled' : IDL.Null,
+});
+export const DeliveryStatus = IDL.Variant({
+  'pending' : IDL.Null,
+  'delivered' : IDL.Null,
+  'failed' : IDL.Null,
+});
+export const NotificationRecord = IDL.Record({
+  'bookingId' : IDL.Nat,
+  'notificationType' : NotificationType,
+  'recipient' : IDL.Principal,
+  'deliveryStatus' : DeliveryStatus,
+  'timestamp' : Time,
+});
 export const Review = IDL.Record({
   'customer' : IDL.Principal,
   'comment' : IDL.Text,
   'timestamp' : Time,
   'rating' : IDL.Nat,
+  'photo' : IDL.Opt(ExternalBlob),
 });
 
 export const idlService = IDL.Service({
+  '_caffeineStorageBlobIsLive' : IDL.Func(
+      [IDL.Vec(IDL.Nat8)],
+      [IDL.Bool],
+      ['query'],
+    ),
+  '_caffeineStorageBlobsToDelete' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      ['query'],
+    ),
+  '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+      [IDL.Vec(IDL.Vec(IDL.Nat8))],
+      [],
+      [],
+    ),
+  '_caffeineStorageCreateCertificate' : IDL.Func(
+      [IDL.Text],
+      [_CaffeineStorageCreateCertificateResult],
+      [],
+    ),
+  '_caffeineStorageRefillCashier' : IDL.Func(
+      [IDL.Opt(_CaffeineStorageRefillInformation)],
+      [_CaffeineStorageRefillResult],
+      [],
+    ),
+  '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'addService' : IDL.Func([IDL.Text, IDL.Nat], [], []),
   'adminDeleteSalon' : IDL.Func([IDL.Principal], [], []),
@@ -67,6 +132,18 @@ export const idlService = IDL.Service({
       [IDL.Nat],
       [],
     ),
+  'cancelBooking' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+  'checkPendingBookingsForReminders' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Nat))],
+      [],
+    ),
+  'confirmBooking' : IDL.Func([IDL.Nat], [], []),
+  'createNotification' : IDL.Func(
+      [IDL.Principal, NotificationType, IDL.Nat],
+      [IDL.Nat],
+      [],
+    ),
   'createOrUpdateSalon' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [],
@@ -77,6 +154,11 @@ export const idlService = IDL.Service({
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCustomerBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
+  'getNotificationsForUser' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Vec(NotificationRecord)],
+      ['query'],
+    ),
   'getSalon' : IDL.Func([IDL.Principal], [IDL.Opt(Salon)], ['query']),
   'getSalonBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
   'getSalonReviews' : IDL.Func([IDL.Principal], [IDL.Vec(Review)], ['query']),
@@ -89,22 +171,51 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'markBookingComplete' : IDL.Func([IDL.Nat], [], []),
-  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'setTimeSlots' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
-  'submitReview' : IDL.Func([IDL.Principal, IDL.Nat, IDL.Text], [], []),
+  'submitReview' : IDL.Func(
+      [IDL.Principal, IDL.Nat, IDL.Text, IDL.Opt(ExternalBlob)],
+      [],
+      [],
+    ),
+  'updateNotificationStatus' : IDL.Func(
+      [IDL.Nat, DeliveryStatus],
+      [IDL.Bool],
+      [],
+    ),
   'updateService' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [], []),
+  'updateUserProfile' : IDL.Func([IDL.Text, IDL.Text], [], []),
+  'uploadProfilePhoto' : IDL.Func([ExternalBlob], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const _CaffeineStorageCreateCertificateResult = IDL.Record({
+    'method' : IDL.Text,
+    'blob_hash' : IDL.Text,
+  });
+  const _CaffeineStorageRefillInformation = IDL.Record({
+    'proposed_top_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const _CaffeineStorageRefillResult = IDL.Record({
+    'success' : IDL.Opt(IDL.Bool),
+    'topped_up_amount' : IDL.Opt(IDL.Nat),
+  });
+  const BookingStatus = IDL.Variant({
+    'cancelled' : IDL.Null,
+    'pending' : IDL.Null,
+    'confirmed' : IDL.Null,
+  });
   const Time = IDL.Int;
   const Booking = IDL.Record({
     'id' : IDL.Nat,
+    'status' : BookingStatus,
     'customer' : IDL.Principal,
+    'cancellationReason' : IDL.Opt(IDL.Text),
     'completed' : IDL.Bool,
     'timestamp' : Time,
     'serviceId' : IDL.Nat,
+    'lastReminderSent' : IDL.Opt(Time),
     'timeSlot' : IDL.Text,
     'salonId' : IDL.Principal,
   });
@@ -122,9 +233,11 @@ export const idlFactory = ({ IDL }) => {
     'contactNumber' : IDL.Text,
     'services' : IDL.Vec(Service),
   });
+  const ExternalBlob = IDL.Vec(IDL.Nat8);
   const UserProfile = IDL.Record({
     'userType' : IDL.Text,
     'name' : IDL.Text,
+    'profilePhoto' : IDL.Opt(ExternalBlob),
     'phoneNumber' : IDL.Text,
   });
   const UserRole = IDL.Variant({
@@ -132,14 +245,58 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const NotificationType = IDL.Variant({
+    'bookingConfirmed' : IDL.Null,
+    'bookingReminder' : IDL.Null,
+    'bookingCancelled' : IDL.Null,
+  });
+  const DeliveryStatus = IDL.Variant({
+    'pending' : IDL.Null,
+    'delivered' : IDL.Null,
+    'failed' : IDL.Null,
+  });
+  const NotificationRecord = IDL.Record({
+    'bookingId' : IDL.Nat,
+    'notificationType' : NotificationType,
+    'recipient' : IDL.Principal,
+    'deliveryStatus' : DeliveryStatus,
+    'timestamp' : Time,
+  });
   const Review = IDL.Record({
     'customer' : IDL.Principal,
     'comment' : IDL.Text,
     'timestamp' : Time,
     'rating' : IDL.Nat,
+    'photo' : IDL.Opt(ExternalBlob),
   });
   
   return IDL.Service({
+    '_caffeineStorageBlobIsLive' : IDL.Func(
+        [IDL.Vec(IDL.Nat8)],
+        [IDL.Bool],
+        ['query'],
+      ),
+    '_caffeineStorageBlobsToDelete' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        ['query'],
+      ),
+    '_caffeineStorageConfirmBlobDeletion' : IDL.Func(
+        [IDL.Vec(IDL.Vec(IDL.Nat8))],
+        [],
+        [],
+      ),
+    '_caffeineStorageCreateCertificate' : IDL.Func(
+        [IDL.Text],
+        [_CaffeineStorageCreateCertificateResult],
+        [],
+      ),
+    '_caffeineStorageRefillCashier' : IDL.Func(
+        [IDL.Opt(_CaffeineStorageRefillInformation)],
+        [_CaffeineStorageRefillResult],
+        [],
+      ),
+    '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'addService' : IDL.Func([IDL.Text, IDL.Nat], [], []),
     'adminDeleteSalon' : IDL.Func([IDL.Principal], [], []),
@@ -157,6 +314,18 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Nat],
         [],
       ),
+    'cancelBooking' : IDL.Func([IDL.Nat, IDL.Text], [], []),
+    'checkPendingBookingsForReminders' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Principal, IDL.Nat))],
+        [],
+      ),
+    'confirmBooking' : IDL.Func([IDL.Nat], [], []),
+    'createNotification' : IDL.Func(
+        [IDL.Principal, NotificationType, IDL.Nat],
+        [IDL.Nat],
+        [],
+      ),
     'createOrUpdateSalon' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],
@@ -167,6 +336,11 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCustomerBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
+    'getNotificationsForUser' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Vec(NotificationRecord)],
+        ['query'],
+      ),
     'getSalon' : IDL.Func([IDL.Principal], [IDL.Opt(Salon)], ['query']),
     'getSalonBookings' : IDL.Func([], [IDL.Vec(Booking)], ['query']),
     'getSalonReviews' : IDL.Func([IDL.Principal], [IDL.Vec(Review)], ['query']),
@@ -183,10 +357,20 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'markBookingComplete' : IDL.Func([IDL.Nat], [], []),
-    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'setTimeSlots' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
-    'submitReview' : IDL.Func([IDL.Principal, IDL.Nat, IDL.Text], [], []),
+    'submitReview' : IDL.Func(
+        [IDL.Principal, IDL.Nat, IDL.Text, IDL.Opt(ExternalBlob)],
+        [],
+        [],
+      ),
+    'updateNotificationStatus' : IDL.Func(
+        [IDL.Nat, DeliveryStatus],
+        [IDL.Bool],
+        [],
+      ),
     'updateService' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [], []),
+    'updateUserProfile' : IDL.Func([IDL.Text, IDL.Text], [], []),
+    'uploadProfilePhoto' : IDL.Func([ExternalBlob], [], []),
   });
 };
 

@@ -15,7 +15,7 @@ export default function WelcomePage() {
       if (userProfile.userType === 'customer') {
         navigate({ to: '/salons' });
       } else if (userProfile.userType === 'salon_owner') {
-        navigate({ to: '/salon/profile' });
+        navigate({ to: '/salon-profile' });
       }
     }
   }, [identity, userProfile, navigate]);

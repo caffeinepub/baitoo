@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { UserProfile, Salon, Service, Booking, Review } from '../backend';
+import { useInternetIdentity } from './useInternetIdentity';
+import type { UserProfile, Salon, Service, Booking, Review, NotificationRecord, DeliveryStatus, ExternalBlob } from '../backend';
 import { Principal } from '@dfinity/principal';
 
 // User Profile Hooks
@@ -31,7 +32,42 @@ export function useSaveCallerUserProfile() {
   return useMutation({
     mutationFn: async (profile: UserProfile) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.saveCallerUserProfile(profile);
+      // Use updateUserProfile to save the profile data
+      await actor.updateUserProfile(profile.name, profile.phoneNumber);
+      // If there's a profile photo, upload it separately
+      if (profile.profilePhoto) {
+        await actor.uploadProfilePhoto(profile.profilePhoto);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+  });
+}
+
+export function useUpdateUserProfile() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { name: string; phoneNumber: string }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateUserProfile(data.name, data.phoneNumber);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+  });
+}
+
+export function useUploadProfilePhoto() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (blobRef: ExternalBlob) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.uploadProfilePhoto(blobRef);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
@@ -183,6 +219,8 @@ export function useBookAppointment() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['customerBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['salonBookings'] });
     },
   });
 }
@@ -243,15 +281,68 @@ export function useMarkBookingComplete() {
   });
 }
 
+export function useConfirmBooking() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (bookingId: bigint) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.confirmBooking(bookingId);
+      
+      // Create notification for customer
+      const booking = await actor.getBooking(bookingId);
+      if (booking) {
+        await actor.createNotification(
+          booking.customer,
+          { bookingConfirmed: null } as any,
+          bookingId
+        );
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salonBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}
+
+export function useCancelBooking() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { bookingId: bigint; reason: string }) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.cancelBooking(data.bookingId, data.reason);
+      
+      // Create notification for customer
+      const booking = await actor.getBooking(data.bookingId);
+      if (booking) {
+        await actor.createNotification(
+          booking.customer,
+          { bookingCancelled: null } as any,
+          data.bookingId
+        );
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['salonBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['customerBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
+  });
+}
+
 // Review Hooks
 export function useSubmitReview() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { salonId: Principal; rating: bigint; comment: string }) => {
+    mutationFn: async (data: { salonId: Principal; rating: bigint; comment: string; photo: ExternalBlob | null }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.submitReview(data.salonId, data.rating, data.comment);
+      return actor.submitReview(data.salonId, data.rating, data.comment, data.photo);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reviews'] });
@@ -269,6 +360,37 @@ export function useGetSalonReviews(salonId: string | undefined) {
       return actor.getSalonReviews(Principal.fromText(salonId));
     },
     enabled: !!actor && !actorFetching && !!salonId,
+  });
+}
+
+// Notification Hooks
+export function useNotifications() {
+  const { actor, isFetching: actorFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<NotificationRecord[]>({
+    queryKey: ['notifications'],
+    queryFn: async () => {
+      if (!actor || !identity) return [];
+      return actor.getNotificationsForUser(identity.getPrincipal());
+    },
+    enabled: !!actor && !actorFetching && !!identity,
+    refetchInterval: 5000, // Poll every 5 seconds
+  });
+}
+
+export function useUpdateNotificationStatus() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { notificationId: bigint; status: DeliveryStatus }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateNotificationStatus(data.notificationId, data.status);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+    },
   });
 }
 

@@ -8,24 +8,30 @@ import Order "mo:core/Order";
 import Time "mo:core/Time";
 import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
+
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
+import MixinStorage "blob-storage/Mixin";
+import Storage "blob-storage/Storage";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+  include MixinStorage();
 
-  // User Profile Type
   public type UserProfile = {
     phoneNumber : Text;
     name : Text;
-    userType : Text; // "salon_owner" or "customer"
+    userType : Text;
+    profilePhoto : ?Storage.ExternalBlob;
   };
 
   type Service = {
     id : Nat;
     name : Text;
-    price : Nat; // Price in INR (rupees)
+    price : Nat;
   };
 
   module Service {
@@ -35,19 +41,25 @@ actor {
   };
 
   type Salon = {
-    id : Principal; // Salon owner principal
+    id : Principal;
     name : Text;
     address : Text;
     contactNumber : Text;
     openingHours : Text;
     services : [Service];
-    timeSlots : [Text]; // e.g. "10:00 AM", "2:30 PM"
+    timeSlots : [Text];
   };
 
   module Salon {
     public func compare(s1 : Salon, s2 : Salon) : Order.Order {
       Text.compare(s1.name, s2.name);
     };
+  };
+
+  public type BookingStatus = {
+    #pending;
+    #confirmed;
+    #cancelled;
   };
 
   type Booking = {
@@ -58,24 +70,49 @@ actor {
     timeSlot : Text;
     completed : Bool;
     timestamp : Time.Time;
+    status : BookingStatus;
+    cancellationReason : ?Text;
+    lastReminderSent : ?Time.Time;
   };
 
   type Review = {
     customer : Principal;
-    rating : Nat; // 1-5 stars
+    rating : Nat;
     comment : Text;
     timestamp : Time.Time;
+    photo : ?Storage.ExternalBlob;
+  };
+
+  public type NotificationType = {
+    #bookingReminder;
+    #bookingConfirmed;
+    #bookingCancelled;
+  };
+
+  public type DeliveryStatus = {
+    #pending;
+    #delivered;
+    #failed;
+  };
+
+  public type NotificationRecord = {
+    recipient : Principal;
+    notificationType : NotificationType;
+    bookingId : Nat;
+    timestamp : Time.Time;
+    deliveryStatus : DeliveryStatus;
   };
 
   let userProfiles = Map.empty<Principal, UserProfile>();
   let salons = Map.empty<Principal, Salon>();
   let bookings = Map.empty<Nat, Booking>();
   let reviews = Map.empty<Principal, [Review]>();
+  let notifications = Map.empty<Nat, NotificationRecord>();
 
   var nextBookingId = 1;
   var nextServiceId = 1;
+  var nextNotificationId = 1;
 
-  // User Profile Management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -90,14 +127,43 @@ actor {
     userProfiles.get(user);
   };
 
-  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+  public shared ({ caller }) func updateUserProfile(name : Text, phoneNumber : Text) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+      Runtime.trap("Unauthorized: Only users can update profiles");
     };
-    userProfiles.add(caller, profile);
+
+    let existingProfile = switch (userProfiles.get(caller)) {
+      case (null) { Runtime.trap("User profile does not exist") };
+      case (?p) { p };
+    };
+
+    let updatedProfile = {
+      existingProfile with
+      name;
+      phoneNumber;
+    };
+
+    userProfiles.add(caller, updatedProfile);
   };
 
-  // Salon Profile Management
+  public shared ({ caller }) func uploadProfilePhoto(blobRef : Storage.ExternalBlob) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can upload profile photos");
+    };
+
+    let existingProfile = switch (userProfiles.get(caller)) {
+      case (null) { Runtime.trap("User profile does not exist") };
+      case (?p) { p };
+    };
+
+    let updatedProfile = {
+      existingProfile with
+      profilePhoto = ?blobRef;
+    };
+
+    userProfiles.add(caller, updatedProfile);
+  };
+
   public query ({ caller }) func getSalon(salonId : Principal) : async ?Salon {
     salons.get(salonId);
   };
@@ -130,7 +196,6 @@ actor {
     salons.add(caller, updatedSalon);
   };
 
-  // Service Management
   public query ({ caller }) func getSalonServices(salonId : Principal) : async [Service] {
     switch (salons.get(salonId)) {
       case (?salon) { salon.services };
@@ -178,7 +243,6 @@ actor {
     salons.add(caller, updatedSalon);
   };
 
-  // Time Slot Management
   public shared ({ caller }) func setTimeSlots(timeSlots : [Text]) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can set time slots");
@@ -198,7 +262,6 @@ actor {
     };
   };
 
-  // Appointment Booking
   public shared ({ caller }) func bookAppointment(salonId : Principal, serviceId : Nat, timeSlot : Text) : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can book appointments");
@@ -222,13 +285,15 @@ actor {
       timeSlot;
       completed = false;
       timestamp = Time.now();
+      status = #pending;
+      cancellationReason = null;
+      lastReminderSent = null;
     };
     bookings.add(nextBookingId, newBooking);
     nextBookingId += 1;
     newBooking.id;
   };
 
-  // Booking Completion
   public shared ({ caller }) func markBookingComplete(bookingId : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can mark bookings as complete");
@@ -244,7 +309,47 @@ actor {
     bookings.add(bookingId, updatedBooking);
   };
 
-  // Bookings Dashboard for Salon Owners
+  // New functions for booking status management
+  public shared ({ caller }) func confirmBooking(bookingId : Nat) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can confirm bookings");
+    };
+    let booking = switch (bookings.get(bookingId)) {
+      case (null) { Runtime.trap("Booking does not exist") };
+      case (?b) { b };
+    };
+    if (booking.salonId != caller) {
+      Runtime.trap("Unauthorized: Only the salon owner can confirm bookings");
+    };
+    if (booking.status != #pending) {
+      Runtime.trap("Booking can only be confirmed from pending state");
+    };
+    let updatedBooking = { booking with status = #confirmed };
+    bookings.add(bookingId, updatedBooking);
+  };
+
+  public shared ({ caller }) func cancelBooking(bookingId : Nat, reason : Text) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can cancel bookings");
+    };
+    let booking = switch (bookings.get(bookingId)) {
+      case (null) { Runtime.trap("Booking does not exist") };
+      case (?b) { b };
+    };
+    if (booking.salonId != caller) {
+      Runtime.trap("Unauthorized: Only the salon owner can cancel bookings");
+    };
+    if (booking.status == #cancelled) {
+      Runtime.trap("Booking is already cancelled");
+    };
+    let updatedBooking = {
+      booking with
+      status = #cancelled;
+      cancellationReason = ?reason;
+    };
+    bookings.add(bookingId, updatedBooking);
+  };
+
   public query ({ caller }) func getSalonBookings() : async [Booking] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view salon bookings");
@@ -252,7 +357,6 @@ actor {
     bookings.values().toArray().filter(func(b : Booking) : Bool { b.salonId == caller });
   };
 
-  // Customer Bookings
   public query ({ caller }) func getCustomerBookings() : async [Booking] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view their bookings");
@@ -260,7 +364,6 @@ actor {
     bookings.values().toArray().filter(func(b : Booking) : Bool { b.customer == caller });
   };
 
-  // Get specific booking details
   public query ({ caller }) func getBooking(bookingId : Nat) : async ?Booking {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view booking details");
@@ -277,18 +380,15 @@ actor {
     };
   };
 
-  // Salon Discovery
   public query ({ caller }) func getAllSalons() : async [Salon] {
     salons.values().toArray().sort();
   };
 
-  // Reviews and Ratings
-  public shared ({ caller }) func submitReview(salonId : Principal, rating : Nat, comment : Text) : async () {
+  public shared ({ caller }) func submitReview(salonId : Principal, rating : Nat, comment : Text, photo : ?Storage.ExternalBlob) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can submit reviews");
     };
 
-    // Verify customer has a completed booking at this salon
     let hasCompletedBooking = bookings.values().toArray().find(
       func(b : Booking) : Bool {
         b.customer == caller and b.salonId == salonId and b.completed;
@@ -308,6 +408,7 @@ actor {
           rating;
           comment;
           timestamp = Time.now();
+          photo;
         };
         let existingReviews = switch (reviews.get(salonId)) {
           case (null) { [] };
@@ -326,7 +427,6 @@ actor {
     };
   };
 
-  // Admin Panel Functions
   public query ({ caller }) func adminGetAllSalons() : async [Salon] {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can view all salons");
@@ -360,5 +460,86 @@ actor {
       Runtime.trap("Unauthorized: Only admins can delete users");
     };
     userProfiles.remove(userId);
+  };
+
+  // Notification-related functions
+  public query ({ caller }) func getNotificationsForUser(user : Principal) : async [NotificationRecord] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view notifications");
+    };
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own notifications");
+    };
+    notifications.values().toArray().filter(func(n) { n.recipient == user });
+  };
+
+  public shared ({ caller }) func updateNotificationStatus(notificationId : Nat, status : DeliveryStatus) : async Bool {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can update notification status");
+    };
+    switch (notifications.get(notificationId)) {
+      case (null) { false };
+      case (?notification) {
+        if (notification.recipient != caller and not AccessControl.isAdmin(accessControlState, caller)) {
+          Runtime.trap("Unauthorized: Can only update your own notifications");
+        };
+        let updatedNotification = { notification with deliveryStatus = status };
+        notifications.add(notificationId, updatedNotification);
+        true;
+      };
+    };
+  };
+
+  // Corrected function with explicit types for mapping
+  public shared ({ caller }) func checkPendingBookingsForReminders() : async [(Principal, Nat)] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can check for pending bookings");
+    };
+
+    let now = Time.now();
+    let thresholdTime = 300_000_000_000;
+
+    let bookingsNeedingReminders = bookings.values().toArray().filter(
+      func(b : Booking) : Bool {
+        b.salonId == caller and b.status == #pending and (now - b.timestamp) > thresholdTime and b.lastReminderSent == null;
+      }
+    );
+
+    for (booking in bookingsNeedingReminders.values()) {
+      let updatedBooking = { booking with lastReminderSent = ?now };
+      bookings.add(booking.id, updatedBooking);
+    };
+
+    // Fixed: mappedBookings with explicit type arguments
+    let mappedBookings = bookingsNeedingReminders.map(
+      func(b) { (b.salonId, b.id) }
+    );
+    mappedBookings;
+  };
+
+  public shared ({ caller }) func createNotification(recipient : Principal, notificationType : NotificationType, bookingId : Nat) : async Nat {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can create notifications");
+    };
+
+    let booking = switch (bookings.get(bookingId)) {
+      case (null) { Runtime.trap("Booking does not exist") };
+      case (?b) { b };
+    };
+
+    if (booking.salonId != caller and booking.customer != caller and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only create notifications for your own bookings");
+    };
+
+    let notificationRecord = {
+      recipient;
+      notificationType;
+      bookingId;
+      timestamp = Time.now();
+      deliveryStatus = #pending;
+    };
+    notifications.add(nextNotificationId, notificationRecord);
+    nextNotificationId += 1;
+    nextNotificationId - 1;
   };
 };
