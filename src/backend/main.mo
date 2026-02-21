@@ -48,6 +48,8 @@ actor {
     openingHours : Text;
     services : [Service];
     timeSlots : [Text];
+    latitude : ?Float;
+    longitude : ?Float;
   };
 
   module Salon {
@@ -182,6 +184,8 @@ actor {
           openingHours = "";
           services = [];
           timeSlots = [];
+          latitude = null;
+          longitude = null;
         };
       };
       case (?salon) { salon };
@@ -309,7 +313,6 @@ actor {
     bookings.add(bookingId, updatedBooking);
   };
 
-  // New functions for booking status management
   public shared ({ caller }) func confirmBooking(bookingId : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can confirm bookings");
@@ -462,7 +465,6 @@ actor {
     userProfiles.remove(userId);
   };
 
-  // Notification-related functions
   public query ({ caller }) func getNotificationsForUser(user : Principal) : async [NotificationRecord] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view notifications");
@@ -490,7 +492,6 @@ actor {
     };
   };
 
-  // Corrected function with explicit types for mapping
   public shared ({ caller }) func checkPendingBookingsForReminders() : async [(Principal, Nat)] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can check for pending bookings");
@@ -510,7 +511,6 @@ actor {
       bookings.add(booking.id, updatedBooking);
     };
 
-    // Fixed: mappedBookings with explicit type arguments
     let mappedBookings = bookingsNeedingReminders.map(
       func(b) { (b.salonId, b.id) }
     );
@@ -541,5 +541,26 @@ actor {
     notifications.add(nextNotificationId, notificationRecord);
     nextNotificationId += 1;
     nextNotificationId - 1;
+  };
+
+  // New admin-only function to update salon location
+  public shared ({ caller }) func updateSalonLocation(salonId : Principal, latitude : Float, longitude : Float) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update salon location");
+    };
+
+    switch (salons.get(salonId)) {
+      case (null) {
+        Runtime.trap("Salon does not exist");
+      };
+      case (?salon) {
+        let updatedSalon = {
+          salon with
+          latitude = ?latitude;
+          longitude = ?longitude;
+        };
+        salons.add(salonId, updatedSalon);
+      };
+    };
   };
 };

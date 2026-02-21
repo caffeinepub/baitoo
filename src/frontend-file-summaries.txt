@@ -1,21 +1,21 @@
 {
   "frontend/src/App.tsx": "Main application component with routing, authentication, profile setup, and initialization of push notifications, reminder checker, and customer notification systems, now including customer profile and salon reviews routes.",
-  "frontend/src/hooks/useQueries.ts": "Comprehensive React Query hooks including profile photo upload, user profile update using the available backend methods (updateUserProfile and uploadProfilePhoto), and enhanced review submission with photo support, plus proper cache invalidation.",
+  "frontend/src/hooks/useQueries.ts": "Comprehensive React Query hooks including all backend operations, now with useUpdateSalonLocation mutation for admin location updates.",
   "frontend/src/components/auth/LoginButton.tsx": "Login/logout button component using Internet Identity with loading states and query cache clearing on logout.",
   "frontend/src/components/auth/ProfileSetupModal.tsx": "Modal dialog for first-time user profile setup collecting name, phone number, and user type with automatic navigation to appropriate dashboard after completion.",
   "frontend/src/components/layout/AppLayout.tsx": "Main layout wrapper with header containing Baitoo branding, profile icon button, notification bell for authenticated users, login button, mobile navigation, and footer.",
   "frontend/src/components/layout/MobileNav.tsx": "Bottom navigation bar for mobile with role-based menu items including new Reviews tab for salon owners with active state highlighting.",
   "frontend/src/pages/WelcomePage.tsx": "Landing page with hero banner, feature highlights, and automatic redirection based on user role after login using the correct route path '/salon-profile'.",
-  "frontend/src/pages/SalonDiscoveryPage.tsx": "Customer-facing page displaying all salons in Faizabad with salon cards showing name, address, contact, hours, and view details button.",
+  "frontend/src/pages/SalonDiscoveryPage.tsx": "Customer-facing page displaying salons with GPS-based location detection, dynamic heading (\"Nearby You\" or \"Salons in Faizabad\"), distance calculation and display, and sorting by nearest first when location permission is granted.",
   "frontend/src/pages/SalonDetailPage.tsx": "Detailed salon view showing complete information, services with prices, and reviews with star ratings and photo thumbnails that open in full-size dialog on click.",
-  "frontend/src/pages/BookingPage.tsx": "Appointment booking form with service and time slot selection dropdowns, form validation, and navigation to confirmation page on success.",
+  "frontend/src/pages/BookingPage.tsx": "Appointment booking form with service and time slot selection, now includes a notice below the booking button reminding customers to arrive 10 minutes early.",
   "frontend/src/pages/BookingConfirmationPage.tsx": "Booking confirmation screen displaying booking details with success icon and navigation options to view bookings or browse salons.",
   "frontend/src/pages/CustomerBookingsPage.tsx": "Customer bookings list with status badges, cancellation reasons display, and enhanced review dialog with star rating, text review, and optional photo upload.",
   "frontend/src/pages/SalonProfilePage.tsx": "Salon owner profile management form with profile photo upload, editable business information including name, address, contact, and opening hours with correct import path for Button component.",
   "frontend/src/pages/ServiceManagementPage.tsx": "Service management interface for salon owners to add, edit, and view services with name and price in rupees using dialog forms.",
   "frontend/src/pages/TimeSlotManagementPage.tsx": "Time slot configuration page for salon owners to add, remove, and save available appointment time slots.",
   "frontend/src/pages/SalonBookingsDashboard.tsx": "Salon owner bookings dashboard displaying all appointments with color-coded status badges (Pending/Confirmed/Cancelled), cancellation reasons, and conditional Mark as Completed button.",
-  "frontend/src/pages/AdminDashboard.tsx": "Admin panel with tabs for managing salons and users, displaying lists with delete functionality and access control checks.",
+  "frontend/src/pages/AdminDashboard.tsx": "Admin panel with tabs for managing salons and users, now includes GPS location input fields (latitude/longitude) for each salon with validation and save functionality.",
   "frontend/src/index.css": "Global styles with OKLCH color system using warm earth tones (browns, oranges) for light theme suitable for salon booking app with proper contrast.",
   "frontend/tailwind.config.js": "Tailwind configuration with warm earth tone color palette, mobile-first responsive settings, and increased base font size for accessibility.",
   "frontend/public/service-worker.js": "Service worker that handles push notifications, displays booking alerts with sound, and manages notification click events to focus the app window.",
@@ -26,5 +26,6 @@
   "frontend/src/components/notifications/NotificationBell.tsx": "Bell icon component with badge count that opens a dropdown showing pending booking notifications for salon owners, now using proper ES6 imports.",
   "frontend/src/components/shared/ImageUploadField.tsx": "Reusable image upload component supporting both gallery file selection and camera capture with preview functionality and remove option.",
   "frontend/src/pages/CustomerProfilePage.tsx": "Customer profile page with profile photo upload, editable personal information, and booking history section displaying past and upcoming bookings with status badges.",
-  "frontend/src/pages/SalonReviewsPage.tsx": "Salon owner reviews dashboard displaying all customer reviews sorted by date with star ratings, text, and photo thumbnails with click-to-enlarge functionality."
+  "frontend/src/pages/SalonReviewsPage.tsx": "Salon owner reviews dashboard displaying all customer reviews sorted by date with star ratings, text, and photo thumbnails with click-to-enlarge functionality.",
+  "frontend/src/utils/distance.ts": "Utility function implementing the Haversine formula to calculate distance in kilometers between two GPS coordinate pairs with one decimal precision."
 }

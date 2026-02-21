@@ -464,3 +464,19 @@ export function useAdminDeleteUser() {
     },
   });
 }
+
+export function useUpdateSalonLocation() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { salonId: Principal; latitude: number; longitude: number }) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.updateSalonLocation(data.salonId, data.latitude, data.longitude);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['adminSalons'] });
+      queryClient.invalidateQueries({ queryKey: ['salons'] });
+    },
+  });
+}

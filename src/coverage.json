@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-20T22:51:50.141Z",
+  "generatedAt": "2026-02-21T04:16:03.291Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,141 +11,116 @@
     "implemented": 7,
     "items": [
       {
-        "id": "REQ-24",
-        "summary": "Add profile photo field to backend User type and implement uploadProfilePhoto and updateUserProfile functions to handle profile photo storage and user profile updates including name and phone",
+        "id": "REQ-33",
+        "summary": "Extend the backend Salon type to include optional latitude (Float) and longitude (Float) fields for storing GPS coordinates",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-25",
-        "summary": "Add photo upload field to Review type in backend and update submitReview function to accept and store optional review photos submitted by customers",
+        "id": "REQ-34",
+        "summary": "Add backend function updateSalonLocation that allows admin users to update a salon's latitude and longitude coordinates by salon ID",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-26",
-        "summary": "Remove ProfileSetupModal from displaying as the main screen after registration and profile creation, ensuring users are redirected to their appropriate dashboard (salon owner or customer) instead of staying on the profile setup page",
+        "id": "REQ-35",
+        "summary": "Add location input fields (latitude and longitude) to the AdminDashboard for each salon with a save button to update salon coordinates",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/ProfileSetupModal.tsx",
-          "frontend/src/App.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/auth/ProfileSetupModal.tsx",
-          "frontend/src/App.tsx"
-        ]
-      },
-      {
-        "id": "REQ-27",
-        "summary": "Add a small profile icon in the top-right corner of the AppLayout header that is always visible for authenticated users and opens the user's profile page when clicked",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/layout/AppLayout.tsx",
-          "frontend/src/routes.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/layout/AppLayout.tsx"
-        ]
-      },
-      {
-        "id": "REQ-28",
-        "summary": "Create a comprehensive salon owner profile page that displays and allows editing of profile photo, salon name, address, contact number, opening hours with a save changes button, and includes an image upload component supporting gallery and camera access",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/shared/ImageUploadField.tsx",
-          "frontend/src/pages/SalonProfilePage.tsx",
+          "frontend/src/pages/AdminDashboard.tsx",
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/shared/ImageUploadField.tsx",
-          "frontend/src/pages/SalonProfilePage.tsx",
+          "frontend/src/pages/AdminDashboard.tsx",
           "frontend/src/hooks/useQueries.ts"
         ]
       },
       {
-        "id": "REQ-29",
-        "summary": "Create a comprehensive customer profile page that displays and allows editing of profile photo, name, phone number, with a save changes button, displays booking history with past and upcoming bookings, and includes an image upload component supporting gallery and camera access",
+        "id": "REQ-36",
+        "summary": "Implement GPS location permission request flow in SalonDiscoveryPage that asks for user's current location when the page loads",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/CustomerProfilePage.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/CustomerProfilePage.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
         ]
       },
       {
-        "id": "REQ-30",
-        "summary": "Update CustomerBookingsPage review submission dialog to include a photo upload option allowing customers to upload photos of their haircut results, supporting gallery and camera access, and send the photo data along with rating and text to the backend submitReview function",
+        "id": "REQ-37",
+        "summary": "Add distance calculation utility function that computes the distance in kilometers between two GPS coordinates using the Haversine formula",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/CustomerBookingsPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/utils/distance.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/CustomerBookingsPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/utils/distance.ts"
         ]
       },
       {
-        "id": "REQ-31",
-        "summary": "Update SalonDetailPage reviews section to display customer review photos alongside ratings and text reviews, showing photo thumbnails that can be clicked to view full size",
+        "id": "REQ-38",
+        "summary": "Update SalonDiscoveryPage to calculate and display distance from customer's current location to each salon that has GPS coordinates, showing the distance in the format '1.5 km away'",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/SalonDetailPage.tsx"
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/SalonDetailPage.tsx"
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
         ]
       },
       {
-        "id": "REQ-32",
-        "summary": "Add a reviews section to the salon owner dashboard that displays all reviews for the salon including star ratings, text reviews, customer names, and uploaded review photos with photo viewing capability",
+        "id": "REQ-39",
+        "summary": "Update SalonDiscoveryPage to sort salons by distance from customer's location, placing nearest salons first when location permission is granted",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/SalonReviewsPage.tsx",
-          "frontend/src/components/layout/MobileNav.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/SalonReviewsPage.tsx",
-          "frontend/src/components/layout/MobileNav.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-40",
+        "summary": "Update SalonDiscoveryPage heading text to dynamically display 'Nearby You' when location permission is granted, or 'Salons in Faizabad' when permission is denied or not available",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/SalonDiscoveryPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-41",
+        "summary": "Add a notice text 'Please reach the salon at least 10 minutes before your booking time.' below the booking confirmation button on the BookingPage",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/BookingPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/BookingPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/blob-storage/Mixin.mo",
-    "backend/blob-storage/Storage.mo",
     "backend/main.mo",
     "backend/migration.mo",
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/profile-icon.dim_40x40.png",
-    "frontend/src/App.tsx",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/camera/useCamera.ts",
-    "frontend/src/components/auth/ProfileSetupModal.tsx",
-    "frontend/src/components/layout/AppLayout.tsx",
-    "frontend/src/components/layout/MobileNav.tsx",
-    "frontend/src/components/shared/ImageUploadField.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/CustomerBookingsPage.tsx",
-    "frontend/src/pages/CustomerProfilePage.tsx",
-    "frontend/src/pages/SalonDetailPage.tsx",
-    "frontend/src/pages/SalonProfilePage.tsx",
-    "frontend/src/pages/SalonReviewsPage.tsx",
-    "frontend/src/pages/WelcomePage.tsx",
+    "frontend/src/pages/AdminDashboard.tsx",
+    "frontend/src/pages/BookingPage.tsx",
+    "frontend/src/pages/SalonDiscoveryPage.tsx",
+    "frontend/src/utils/distance.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

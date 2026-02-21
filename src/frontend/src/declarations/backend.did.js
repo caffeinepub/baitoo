@@ -44,8 +44,10 @@ export const Service = IDL.Record({
 });
 export const Salon = IDL.Record({
   'id' : IDL.Principal,
+  'latitude' : IDL.Opt(IDL.Float64),
   'timeSlots' : IDL.Vec(IDL.Text),
   'name' : IDL.Text,
+  'longitude' : IDL.Opt(IDL.Float64),
   'address' : IDL.Text,
   'openingHours' : IDL.Text,
   'contactNumber' : IDL.Text,
@@ -182,6 +184,11 @@ export const idlService = IDL.Service({
       [IDL.Bool],
       [],
     ),
+  'updateSalonLocation' : IDL.Func(
+      [IDL.Principal, IDL.Float64, IDL.Float64],
+      [],
+      [],
+    ),
   'updateService' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [], []),
   'updateUserProfile' : IDL.Func([IDL.Text, IDL.Text], [], []),
   'uploadProfilePhoto' : IDL.Func([ExternalBlob], [], []),
@@ -226,8 +233,10 @@ export const idlFactory = ({ IDL }) => {
   });
   const Salon = IDL.Record({
     'id' : IDL.Principal,
+    'latitude' : IDL.Opt(IDL.Float64),
     'timeSlots' : IDL.Vec(IDL.Text),
     'name' : IDL.Text,
+    'longitude' : IDL.Opt(IDL.Float64),
     'address' : IDL.Text,
     'openingHours' : IDL.Text,
     'contactNumber' : IDL.Text,
@@ -366,6 +375,11 @@ export const idlFactory = ({ IDL }) => {
     'updateNotificationStatus' : IDL.Func(
         [IDL.Nat, DeliveryStatus],
         [IDL.Bool],
+        [],
+      ),
+    'updateSalonLocation' : IDL.Func(
+        [IDL.Principal, IDL.Float64, IDL.Float64],
+        [],
         [],
       ),
     'updateService' : IDL.Func([IDL.Nat, IDL.Text, IDL.Nat], [], []),

@@ -2,99 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-profilesetupmodal-from-displaying-as-the-main-screen-after-registration-and-profile-creation-ensuring-users-are-redirected-to-their-appropriate-dashboard-salon-owner-or-customer-instead-of-staying-on-the-profile-setup-page",
-      "featureTitle": "Remove ProfileSetupModal from displaying as the main screen after registration and profile creation, ensuring users are redirected to their appropriate dashboard (salon owner or customer) instead of staying on the profile setup page",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/auth/ProfileSetupModal.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-26"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-small-profile-icon-in-the-top-right-corner-of-the-applayout-header-that-is-always-visible-for-authenticated-users-and-opens-the-user-s-profile-page-when-clicked",
-      "featureTitle": "Add a small profile icon in the top-right corner of the AppLayout header that is always visible for authenticated users and opens the user's profile page when clicked",
-      "files": [
-        "frontend/src/components/layout/AppLayout.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-27"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-comprehensive-salon-owner-profile-page-that-displays-and-allows-editing-of-profile-photo-salon-name-address-contact-number-opening-hours-with-a-save-changes-button-and-includes-an-image-upload-component-supporting-gallery-and-camera-access",
-      "featureTitle": "Create a comprehensive salon owner profile page that displays and allows editing of profile photo, salon name, address, contact number, opening hours with a save changes button, and includes an image upload component supporting gallery and camera access",
-      "files": [
-        "frontend/src/components/shared/ImageUploadField.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/SalonProfilePage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-28"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-comprehensive-customer-profile-page-that-displays-and-allows-editing-of-profile-photo-name-phone-number-with-a-save-changes-button-displays-booking-history-with-past-and-upcoming-bookings-and-includes-an-image-upload-component-supporting-gallery-and-camera-access",
-      "featureTitle": "Create a comprehensive customer profile page that displays and allows editing of profile photo, name, phone number, with a save changes button, displays booking history with past and upcoming bookings, and includes an image upload component supporting gallery and camera access",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/CustomerProfilePage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "blob-storage@4.0.0",
-        "camera@1.0.0"
-      ],
-      "testIds": [
-        "REQ-29"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-customerbookingspage-review-submission-dialog-to-include-a-photo-upload-option-allowing-customers-to-upload-photos-of-their-haircut-results-supporting-gallery-and-camera-access-and-send-the-photo-data-along-with-rating-and-text-to-the-backend-submitreview-function",
-      "featureTitle": "Update CustomerBookingsPage review submission dialog to include a photo upload option allowing customers to upload photos of their haircut results, supporting gallery and camera access, and send the photo data along with rating and text to the backend submitReview function",
+      "featureId": "feature-add-location-input-fields-latitude-and-longitude-to-the-admindashboard-for-each-salon-with-a-save-button-to-update-salon-coordinates",
+      "featureTitle": "Add location input fields (latitude and longitude) to the AdminDashboard for each salon with a save button to update salon coordinates",
       "files": [
         "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/CustomerBookingsPage.tsx"
+        "frontend/src/pages/AdminDashboard.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -107,15 +19,15 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-30"
+        "REQ-35"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-salondetailpage-reviews-section-to-display-customer-review-photos-alongside-ratings-and-text-reviews-showing-photo-thumbnails-that-can-be-clicked-to-view-full-size",
-      "featureTitle": "Update SalonDetailPage reviews section to display customer review photos alongside ratings and text reviews, showing photo thumbnails that can be clicked to view full size",
+      "featureId": "feature-implement-gps-location-permission-request-flow-in-salondiscoverypage-that-asks-for-user-s-current-location-when-the-page-loads",
+      "featureTitle": "Implement GPS location permission request flow in SalonDiscoveryPage that asks for user's current location when the page loads",
       "files": [
-        "frontend/src/pages/SalonDetailPage.tsx"
+        "frontend/src/pages/SalonDiscoveryPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -128,17 +40,15 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-31"
+        "REQ-36"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-reviews-section-to-the-salon-owner-dashboard-that-displays-all-reviews-for-the-salon-including-star-ratings-text-reviews-customer-names-and-uploaded-review-photos-with-photo-viewing-capability",
-      "featureTitle": "Add a reviews section to the salon owner dashboard that displays all reviews for the salon including star ratings, text reviews, customer names, and uploaded review photos with photo viewing capability",
+      "featureId": "feature-add-distance-calculation-utility-function-that-computes-the-distance-in-kilometers-between-two-gps-coordinates-using-the-haversine-formula",
+      "featureTitle": "Add distance calculation utility function that computes the distance in kilometers between two GPS coordinates using the Haversine formula",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/layout/MobileNav.tsx",
-        "frontend/src/pages/SalonReviewsPage.tsx"
+        "frontend/src/utils/distance.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -151,7 +61,91 @@
         "camera@1.0.0"
       ],
       "testIds": [
-        "REQ-32"
+        "REQ-37"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-salondiscoverypage-to-calculate-and-display-distance-from-customer-s-current-location-to-each-salon-that-has-gps-coordinates-showing-the-distance-in-the-format-1-5-km-away",
+      "featureTitle": "Update SalonDiscoveryPage to calculate and display distance from customer's current location to each salon that has GPS coordinates, showing the distance in the format '1.5 km away'",
+      "files": [
+        "frontend/src/pages/SalonDiscoveryPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-38"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-salondiscoverypage-to-sort-salons-by-distance-from-customer-s-location-placing-nearest-salons-first-when-location-permission-is-granted",
+      "featureTitle": "Update SalonDiscoveryPage to sort salons by distance from customer's location, placing nearest salons first when location permission is granted",
+      "files": [
+        "frontend/src/pages/SalonDiscoveryPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-39"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-salondiscoverypage-heading-text-to-dynamically-display-nearby-you-when-location-permission-is-granted-or-salons-in-faizabad-when-permission-is-denied-or-not-available",
+      "featureTitle": "Update SalonDiscoveryPage heading text to dynamically display 'Nearby You' when location permission is granted, or 'Salons in Faizabad' when permission is denied or not available",
+      "files": [
+        "frontend/src/pages/SalonDiscoveryPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-40"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-notice-text-please-reach-the-salon-at-least-10-minutes-before-your-booking-time-below-the-booking-confirmation-button-on-the-bookingpage",
+      "featureTitle": "Add a notice text 'Please reach the salon at least 10 minutes before your booking time.' below the booking confirmation button on the BookingPage",
+      "files": [
+        "frontend/src/pages/BookingPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "blob-storage@4.0.0",
+        "camera@1.0.0"
+      ],
+      "testIds": [
+        "REQ-41"
       ],
       "confidence": "high"
     }

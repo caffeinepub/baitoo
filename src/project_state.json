@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
+  "projectStateVersion": 9,
   "summary": "Baitoo - A salon and barber appointment booking mobile app for Faizabad, India. Two user roles: Salon Owners (manage profiles, services, time slots, bookings) and Customers (discover salons, book appointments, leave reviews). Includes admin panel for management and basic notifications. Target: MVP for 10-20 salons and 100-200 users.",
   "architectural_notes": [
     "Mobile app targeting small-town users in Faizabad, India - prioritize simplicity and usability",
@@ -16,7 +16,6 @@
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Simple user profile avatar icon for header, circular silhouette design (profile-icon.dim_40x40.png)",
   "existing_features": [
     {
       "id": "feature-implement-phone-number-based-authentication-system-for-both-salon-owners-and-customers-with-signup-and-login-flows",
@@ -225,6 +224,62 @@
         "REQ-32"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-location-input-fields-latitude-and-longitude-to-the-admindashboard-for-each-salon-with-a-save-button-to-update-salon-coordinates",
+      "title": "Add location input fields (latitude and longitude) to the AdminDashboard for each salon with a save button to update salon coordinates",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-gps-location-permission-request-flow-in-salondiscoverypage-that-asks-for-user-s-current-location-when-the-page-loads",
+      "title": "Implement GPS location permission request flow in SalonDiscoveryPage that asks for user's current location when the page loads",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-distance-calculation-utility-function-that-computes-the-distance-in-kilometers-between-two-gps-coordinates-using-the-haversine-formula",
+      "title": "Add distance calculation utility function that computes the distance in kilometers between two GPS coordinates using the Haversine formula",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-salondiscoverypage-to-calculate-and-display-distance-from-customer-s-current-location-to-each-salon-that-has-gps-coordinates-showing-the-distance-in-the-format-1-5-km-away",
+      "title": "Update SalonDiscoveryPage to calculate and display distance from customer's current location to each salon that has GPS coordinates, showing the distance in the format '1.5 km away'",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-salondiscoverypage-to-sort-salons-by-distance-from-customer-s-location-placing-nearest-salons-first-when-location-permission-is-granted",
+      "title": "Update SalonDiscoveryPage to sort salons by distance from customer's location, placing nearest salons first when location permission is granted",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-salondiscoverypage-heading-text-to-dynamically-display-nearby-you-when-location-permission-is-granted-or-salons-in-faizabad-when-permission-is-denied-or-not-available",
+      "title": "Update SalonDiscoveryPage heading text to dynamically display 'Nearby You' when location permission is granted, or 'Salons in Faizabad' when permission is denied or not available",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-notice-text-please-reach-the-salon-at-least-10-minutes-before-your-booking-time-below-the-booking-confirmation-button-on-the-bookingpage",
+      "title": "Add a notice text 'Please reach the salon at least 10 minutes before your booking time.' below the booking confirmation button on the BookingPage",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -423,6 +478,52 @@
       "summary": "Add photo upload field to Review type in backend and update submitReview function to accept and store optional review photos submitted by customers",
       "reqIds": [
         "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-33",
+      "summary": "Admin panel: add location field for salons (name, full address, latitude, longitude)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Customer: request GPS permission and calculate distance to salons",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Display distance in km and sort salons by nearest first",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Change heading text: 'Nearby You' if location allowed, default city if denied",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-37",
+      "summary": "Add booking page notice: 'Please reach the salon at least 10 minutes before your booking time.'",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Extend the backend Salon type to include optional latitude (Float) and longitude (Float) fields for storing GPS coordinates",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-39",
+      "summary": "Add backend function updateSalonLocation that allows admin users to update a salon's latitude and longitude coordinates by salon ID",
+      "reqIds": [
+        "REQ-34"
       ],
       "status": "pending"
     }

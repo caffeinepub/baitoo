@@ -48,8 +48,10 @@ export interface Review {
 }
 export interface Salon {
   'id' : Principal,
+  'latitude' : [] | [number],
   'timeSlots' : Array<string>,
   'name' : string,
+  'longitude' : [] | [number],
   'address' : string,
   'openingHours' : string,
   'contactNumber' : string,
@@ -139,6 +141,7 @@ export interface _SERVICE {
     undefined
   >,
   'updateNotificationStatus' : ActorMethod<[bigint, DeliveryStatus], boolean>,
+  'updateSalonLocation' : ActorMethod<[Principal, number, number], undefined>,
   'updateService' : ActorMethod<[bigint, string, bigint], undefined>,
   'updateUserProfile' : ActorMethod<[string, string], undefined>,
   'uploadProfilePhoto' : ActorMethod<[ExternalBlob], undefined>,

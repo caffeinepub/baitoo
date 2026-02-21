@@ -1,175 +1,123 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add comprehensive profile system with photos and enhanced review photo uploads",
+  "title": "Add GPS-based nearby salon discovery with location management",
   "requirements": [
     {
-      "id": "REQ-26",
-      "summary": "Remove ProfileSetupModal from displaying as the main screen after registration and redirect users to their appropriate dashboard",
+      "id": "REQ-35",
+      "summary": "Add location input fields (latitude and longitude) to the AdminDashboard for each salon with a save button to update salon coordinates",
       "acceptanceCriteria": [
-        "After completing ProfileSetupModal, users are automatically redirected to their dashboard",
-        "Salon owners land on their salon management dashboard",
-        "Customers land on the salon discovery page",
-        "Profile setup modal does not remain visible after completion"
+        "Admin panel displays latitude and longitude input fields for each salon",
+        "Input fields show current coordinates if already set",
+        "Save button calls updateSalonLocation backend function",
+        "Success/error feedback is displayed after save attempt"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/ProfileSetupModal.tsx",
+          "path": "frontend/src/pages/AdminDashboard.tsx",
           "operation": "modify",
-          "description": "Add automatic navigation after profile creation that redirects salon owners to '/salon-profile' and customers to '/salons' based on their userType selection. Use the router navigation to trigger the redirect after successful profile save."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Update the profile setup modal display logic to ensure it closes and doesn't reappear after the user completes their profile and is redirected to their dashboard."
-        }
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "summary": "Add a small profile icon in the top-right corner of the AppLayout header that opens the user's profile page when clicked",
-      "acceptanceCriteria": [
-        "Profile icon appears in header next to notification bell for authenticated users",
-        "Icon is consistently positioned in top-right corner across all pages",
-        "Clicking icon navigates to appropriate profile page based on user type",
-        "Icon uses a standard user avatar or profile symbol"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/layout/AppLayout.tsx",
-          "operation": "modify",
-          "description": "Add a profile icon button in the header next to the NotificationBell component that displays for authenticated users. Use the generated image at frontend/public/assets/generated/profile-icon.dim_40x40.png as the icon. When clicked, navigate to '/customer-profile' for customers or '/salon-profile' for salon owners based on the userProfile.userType value. Position it consistently in the top-right corner before the login button."
-        },
-        {
-          "path": "frontend/src/routes.tsx",
-          "operation": "create",
-          "description": "Create a new routes file that defines the route configuration for '/customer-profile' and wires it to the CustomerProfilePage component. This file will be imported and used by App.tsx for route registration."
-        }
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "summary": "Create a comprehensive salon owner profile page with profile photo upload, editable business information, and image upload supporting gallery and camera access",
-      "acceptanceCriteria": [
-        "Profile page displays current profile photo with upload/change option",
-        "Form fields for salon name, address, contact number, and opening hours are editable",
-        "Image upload component supports both gallery selection and camera capture",
-        "Save changes button calls backend to update profile with new data",
-        "Profile photo is displayed as a preview after upload before saving",
-        "Success message shown after successful profile update"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/shared/ImageUploadField.tsx",
-          "operation": "create",
-          "description": "Create a reusable image upload component that supports both gallery file selection and camera capture. Use the camera/useCamera hook to provide camera functionality with preview. Include buttons for 'Choose from Gallery' and 'Take Photo' with conditional rendering of camera preview when active. Display selected/captured image as a preview. Accept props for label, current image URL, and onChange callback that receives a File object. Use the blob-storage ExternalBlob class to handle image data. Verify the camera component usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/SalonProfilePage.tsx",
-          "operation": "modify",
-          "description": "Add profile photo upload field at the top of the form using the new ImageUploadField component. Display current profile photo from userProfile.profilePhoto if it exists using getDirectURL(). Include a preview of the selected photo before save. Update the form submission to call both uploadProfilePhoto with the photo ExternalBlob and updateUserProfile with name, phone, salon details. Show success toast after successful update. Ensure all existing salon profile fields (name, address, contact, opening hours) remain editable."
+          "description": "Add latitude and longitude input fields to each salon row in the salons table. Display current coordinates if available. Add a save button next to each salon that calls the updateSalonLocation backend function with the salon ID and entered coordinates. Display success or error toast messages after the save attempt. Ensure inputs accept decimal numbers and validate coordinate ranges (latitude: -90 to 90, longitude: -180 to 180)."
         },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add useUploadProfilePhoto mutation hook that calls actor.uploadProfilePhoto with an ExternalBlob parameter. Add invalidation for 'currentUserProfile' query key on success to refresh the profile data after upload."
+          "description": "Add useUpdateSalonLocation mutation hook that calls actor.updateSalonLocation(salonId, latitude, longitude) and invalidates the 'allSalons' query cache on success. Include error handling and return mutation status for UI feedback."
         }
       ]
     },
     {
-      "id": "REQ-29",
-      "summary": "Create a comprehensive customer profile page with profile photo upload, editable personal information, booking history, and image upload supporting gallery and camera access",
+      "id": "REQ-36",
+      "summary": "Implement GPS location permission request flow in SalonDiscoveryPage that asks for user's current location when the page loads",
       "acceptanceCriteria": [
-        "Profile page displays current profile photo with upload/change option",
-        "Form fields for name and phone number are editable",
-        "Image upload component supports both gallery selection and camera capture",
-        "Booking history section shows list of past and upcoming bookings with status",
-        "Save changes button calls backend to update profile with new data",
-        "Profile photo is displayed as a preview after upload before saving",
-        "Success message shown after successful profile update"
+        "Browser geolocation API permission is requested on page load",
+        "Permission state (granted/denied) is tracked",
+        "User's latitude and longitude are retrieved if permission is granted"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/CustomerProfilePage.tsx",
+          "path": "frontend/src/pages/SalonDiscoveryPage.tsx",
+          "operation": "modify",
+          "description": "Add useEffect hook that runs on component mount to request geolocation permission using navigator.geolocation.getCurrentPosition(). Store the user's current latitude and longitude in component state. Track permission state (granted/denied/unavailable) in component state. Handle permission denial gracefully without blocking the page. Display appropriate UI feedback during location retrieval (e.g., loading indicator)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-37",
+      "summary": "Add distance calculation utility function that computes the distance in kilometers between two GPS coordinates using the Haversine formula",
+      "acceptanceCriteria": [
+        "Function accepts two coordinate pairs (lat1, lon1, lat2, lon2)",
+        "Returns distance in kilometers with one decimal place precision",
+        "Handles edge cases (same location returns 0 km)"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/distance.ts",
           "operation": "create",
-          "description": "Create a new customer profile page that displays and allows editing of profile photo using ImageUploadField component, name field, and phone number field. Use the useGetCallerUserProfile hook to load current profile data. Display the current profile photo using getDirectURL() if it exists. Include a booking history section that uses the useGetCustomerBookings hook to display past and upcoming bookings with status badges (pending/confirmed/cancelled/completed). Show booking details including salon name, service, time slot, and status. Add a save changes button that calls uploadProfilePhoto and updateUserProfile mutations. Show success toast after save. Use the same form layout pattern as SalonProfilePage for consistency."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Register the new '/customer-profile' route that renders the CustomerProfilePage component. Add it to the routes array alongside existing routes like '/salon-profile' and '/bookings'."
+          "description": "Create a utility function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number that implements the Haversine formula to calculate the great-circle distance between two GPS coordinate pairs. Return the distance in kilometers rounded to one decimal place. Handle edge cases where coordinates are identical (return 0). Export the function for use in other components."
         }
       ]
     },
     {
-      "id": "REQ-30",
-      "summary": "Update CustomerBookingsPage review submission dialog to include photo upload option with gallery and camera support and send photo data to backend",
+      "id": "REQ-38",
+      "summary": "Update SalonDiscoveryPage to calculate and display distance from customer's current location to each salon that has GPS coordinates, showing the distance in the format '1.5 km away'",
       "acceptanceCriteria": [
-        "Review dialog includes photo upload button below text review field",
-        "Photo upload component supports gallery selection and camera capture",
-        "Selected photo is previewed in the dialog before submission",
-        "submitReview mutation sends photo data along with rating and text",
-        "Photo upload is optional and review can be submitted without photo",
-        "Clear indication when photo is selected and option to remove it before submission"
+        "Distance is displayed next to each salon that has coordinates",
+        "Distance format matches '1.5 km away' pattern",
+        "Salons without coordinates do not show distance"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/CustomerBookingsPage.tsx",
+          "path": "frontend/src/pages/SalonDiscoveryPage.tsx",
           "operation": "modify",
-          "description": "Add the ImageUploadField component to the review submission dialog below the textarea field. Add state to track the selected photo File. Display a preview of the selected photo in the dialog when one is chosen. Add a remove button next to the preview to clear the selection. Update the submitReview mutation call to convert the File to ExternalBlob using ExternalBlob.fromBytes if a photo is selected, otherwise pass null. Keep the photo upload optional. Use the blob-storage ExternalBlob class to handle the photo data before sending to backend."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Update the useSubmitReview mutation to accept an optional photo parameter of type ExternalBlob or null. Pass this photo parameter to actor.submitReview along with salonId, rating, and comment."
+          "description": "Import the calculateDistance utility from frontend/src/utils/distance.ts. For each salon in the list, check if both the user's current location and the salon's latitude/longitude are available. If both exist, calculate the distance using calculateDistance and display it next to the salon information in the format 'X.X km away'. Only display distance for salons that have coordinates. Ensure the distance text is visually clear and positioned appropriately within each salon card."
         }
       ]
     },
     {
-      "id": "REQ-31",
-      "summary": "Update SalonDetailPage reviews section to display customer review photos alongside ratings and text with click-to-enlarge functionality",
+      "id": "REQ-39",
+      "summary": "Update SalonDiscoveryPage to sort salons by distance from customer's location, placing nearest salons first when location permission is granted",
       "acceptanceCriteria": [
-        "Review cards display photo thumbnails when photos are present",
-        "Photos are shown below or alongside review text",
-        "Clicking a photo thumbnail opens a larger view or modal",
-        "Reviews without photos display normally without photo placeholder",
-        "Multiple photos per review are supported if backend allows",
-        "Photo loading states and error handling are implemented"
+        "When location permission is granted, salons are sorted by ascending distance",
+        "Salons without coordinates appear after salons with coordinates",
+        "When location permission is denied, original salon order is preserved"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/SalonDetailPage.tsx",
+          "path": "frontend/src/pages/SalonDiscoveryPage.tsx",
           "operation": "modify",
-          "description": "Update the reviews section to display photo thumbnails when review.photo exists. Use the getDirectURL() method from the ExternalBlob to render the image as an <img> tag. Position the photo below the review text. Add a click handler that opens a dialog or modal showing the full-size image. Only show the photo element if review.photo is defined. Add loading and error states for image display. Style thumbnails to be a consistent size (e.g., 150px x 150px) with object-fit cover. For the full-size view, create a simple dialog that shows the image at full resolution with a close button."
+          "description": "Add sorting logic that runs after salons are fetched and user location is available. If location permission is granted and user coordinates exist, sort the salons array by calculated distance in ascending order. Place salons with coordinates first (sorted by distance), followed by salons without coordinates (in their original order). If location permission is denied or unavailable, preserve the original salon order returned from the backend. Ensure sorting updates reactively when location state changes."
         }
       ]
     },
     {
-      "id": "REQ-32",
-      "summary": "Add a reviews section to the salon owner dashboard displaying all reviews with photos and viewing capability",
+      "id": "REQ-40",
+      "summary": "Update SalonDiscoveryPage heading text to dynamically display 'Nearby You' when location permission is granted, or 'Salons in Faizabad' when permission is denied or not available",
       "acceptanceCriteria": [
-        "Dashboard includes a reviews tab or section showing all salon reviews",
-        "Each review displays customer name, rating stars, text, and timestamp",
-        "Review photos are displayed as thumbnails with click-to-enlarge functionality",
-        "Reviews are sorted by date (newest first)",
-        "Empty state shown when no reviews exist",
-        "Reviews section is easily accessible from main dashboard navigation"
+        "Heading displays 'Nearby You' when GPS permission is granted",
+        "Heading displays 'Salons in Faizabad' when GPS permission is denied or unavailable",
+        "Heading updates immediately after permission state changes"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/SalonReviewsPage.tsx",
-          "operation": "create",
-          "description": "Create a new salon reviews page that fetches reviews using useGetSalonReviews hook with the salon owner's salon ID. Display reviews in a list or grid, showing customer name (using getUserProfile to fetch customer details), rating stars, review text, timestamp, and photo thumbnail if present. Use getDirectURL() from ExternalBlob to display photos. Add click handlers on photo thumbnails to open a full-size image dialog. Sort reviews by timestamp descending (newest first). Show an empty state message when no reviews exist. Use the same card layout pattern as other dashboard pages for consistency."
-        },
-        {
-          "path": "frontend/src/components/layout/MobileNav.tsx",
+          "path": "frontend/src/pages/SalonDiscoveryPage.tsx",
           "operation": "modify",
-          "description": "Add a 'Reviews' navigation link for salon owners that navigates to '/salon-reviews'. Position it alongside existing links like 'Bookings' and 'Services' in the salon owner navigation section."
-        },
+          "description": "Update the page heading to dynamically render based on the location permission state. Display 'Nearby You' when location permission is granted and user coordinates are successfully retrieved. Display 'Salons in Faizabad' when location permission is denied, unavailable, or not yet determined. Ensure the heading updates reactively when the permission state changes."
+        }
+      ]
+    },
+    {
+      "id": "REQ-41",
+      "summary": "Add a notice text 'Please reach the salon at least 10 minutes before your booking time.' below the booking confirmation button on the BookingPage",
+      "acceptanceCriteria": [
+        "Notice text appears directly below the booking button",
+        "Text is clearly visible and styled appropriately",
+        "Text reads exactly: 'Please reach the salon at least 10 minutes before your booking time.'"
+      ],
+      "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/pages/BookingPage.tsx",
           "operation": "modify",
-          "description": "Register the new '/salon-reviews' route that renders the SalonReviewsPage component. Add it to the routes array alongside other salon owner routes."
+          "description": "Add a text element directly below the booking confirmation button that displays the exact message: 'Please reach the salon at least 10 minutes before your booking time.' Style the text to be clearly visible using appropriate typography classes (e.g., text-sm, text-muted-foreground) to ensure it stands out as an informational notice without overpowering the primary booking action."
         }
       ]
     }

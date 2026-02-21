@@ -7,6 +7,7 @@ import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Principal } from '@dfinity/principal';
 import { toast } from 'sonner';
+import { Info } from 'lucide-react';
 
 export default function BookingPage() {
   const { salonId } = useParams({ from: '/salons/$salonId/book' });
@@ -107,6 +108,13 @@ export default function BookingPage() {
             >
               {bookAppointment.isPending ? 'Booking...' : 'Confirm Booking'}
             </Button>
+
+            <div className="flex items-start gap-2 p-3 bg-muted rounded-lg">
+              <Info className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                Please reach the salon at least 10 minutes before your booking time.
+              </p>
+            </div>
           </form>
         </CardContent>
       </Card>

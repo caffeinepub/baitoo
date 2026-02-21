@@ -17,8 +17,10 @@ export class ExternalBlob {
 export type Time = bigint;
 export interface Salon {
     id: Principal;
+    latitude?: number;
     timeSlots: Array<string>;
     name: string;
+    longitude?: number;
     address: string;
     openingHours: string;
     contactNumber: string;
@@ -112,6 +114,7 @@ export interface backendInterface {
     setTimeSlots(timeSlots: Array<string>): Promise<void>;
     submitReview(salonId: Principal, rating: bigint, comment: string, photo: ExternalBlob | null): Promise<void>;
     updateNotificationStatus(notificationId: bigint, status: DeliveryStatus): Promise<boolean>;
+    updateSalonLocation(salonId: Principal, latitude: number, longitude: number): Promise<void>;
     updateService(serviceId: bigint, name: string, price: bigint): Promise<void>;
     updateUserProfile(name: string, phoneNumber: string): Promise<void>;
     uploadProfilePhoto(blobRef: ExternalBlob): Promise<void>;

@@ -1,64 +1,121 @@
 import Map "mo:core/Map";
-import Principal "mo:core/Principal";
 import Nat "mo:core/Nat";
+import Principal "mo:core/Principal";
+import Iter "mo:core/Iter";
+import Time "mo:core/Time";
 import Storage "blob-storage/Storage";
 
 module {
-  type OldUserProfile = {
-    phoneNumber : Text;
-    name : Text;
-    userType : Text;
-  };
-
-  type OldReview = {
-    customer : Principal;
-    rating : Nat;
-    comment : Text;
-    timestamp : Int;
-  };
-
-  type OldActor = {
-    userProfiles : Map.Map<Principal, OldUserProfile>;
-    reviews : Map.Map<Principal, [OldReview]>;
-  };
-
-  type NewUserProfile = {
+  public type OldUserProfile = {
     phoneNumber : Text;
     name : Text;
     userType : Text;
     profilePhoto : ?Storage.ExternalBlob;
   };
 
-  type NewReview = {
+  public type OldService = {
+    id : Nat;
+    name : Text;
+    price : Nat;
+  };
+
+  public type OldSalon = {
+    id : Principal;
+    name : Text;
+    address : Text;
+    contactNumber : Text;
+    openingHours : Text;
+    services : [OldService];
+    timeSlots : [Text];
+  };
+
+  public type BookingStatus = { #pending; #confirmed; #cancelled };
+
+  public type OldBooking = {
+    id : Nat;
+    customer : Principal;
+    salonId : Principal;
+    serviceId : Nat;
+    timeSlot : Text;
+    completed : Bool;
+    timestamp : Time.Time;
+    status : BookingStatus;
+    cancellationReason : ?Text;
+    lastReminderSent : ?Time.Time;
+  };
+
+  public type OldReview = {
     customer : Principal;
     rating : Nat;
     comment : Text;
-    timestamp : Int;
+    timestamp : Time.Time;
     photo : ?Storage.ExternalBlob;
   };
 
-  type NewActor = {
-    userProfiles : Map.Map<Principal, NewUserProfile>;
-    reviews : Map.Map<Principal, [NewReview]>;
+  public type NotificationType = { #bookingReminder; #bookingConfirmed; #bookingCancelled };
+  public type DeliveryStatus = { #pending; #delivered; #failed };
+
+  public type OldNotificationRecord = {
+    recipient : Principal;
+    notificationType : NotificationType;
+    bookingId : Nat;
+    timestamp : Time.Time;
+    deliveryStatus : DeliveryStatus;
+  };
+
+  public type OldActor = {
+    userProfiles : Map.Map<Principal, OldUserProfile>;
+    salons : Map.Map<Principal, OldSalon>;
+    bookings : Map.Map<Nat, OldBooking>;
+    reviews : Map.Map<Principal, [OldReview]>;
+    notifications : Map.Map<Nat, OldNotificationRecord>;
+    nextBookingId : Nat;
+    nextServiceId : Nat;
+    nextNotificationId : Nat;
+  };
+
+  public type NewSalon = {
+    id : Principal;
+    name : Text;
+    address : Text;
+    contactNumber : Text;
+    openingHours : Text;
+    services : [OldService];
+    timeSlots : [Text];
+    latitude : ?Float;
+    longitude : ?Float;
+  };
+
+  public type NewActor = {
+    userProfiles : Map.Map<Principal, OldUserProfile>;
+    salons : Map.Map<Principal, NewSalon>;
+    bookings : Map.Map<Nat, OldBooking>;
+    reviews : Map.Map<Principal, [OldReview]>;
+    notifications : Map.Map<Nat, OldNotificationRecord>;
+    nextBookingId : Nat;
+    nextServiceId : Nat;
+    nextNotificationId : Nat;
   };
 
   public func run(old : OldActor) : NewActor {
-    let newUserProfiles = old.userProfiles.map<Principal, OldUserProfile, NewUserProfile>(
-      func(_id, oldProfile) {
-        { oldProfile with profilePhoto = null };
+    let newSalons = old.salons.map<Principal, OldSalon, NewSalon>(
+      func(_id, oldSalon) {
+        {
+          id = oldSalon.id;
+          name = oldSalon.name;
+          address = oldSalon.address;
+          contactNumber = oldSalon.contactNumber;
+          openingHours = oldSalon.openingHours;
+          services = oldSalon.services;
+          timeSlots = oldSalon.timeSlots;
+          latitude = null;
+          longitude = null;
+        };
       }
     );
-
-    let newReviews = old.reviews.map<Principal, [OldReview], [NewReview]>(
-      func(_p, oldReviews) {
-        oldReviews.map(
-          func(oldReview) {
-            { oldReview with photo = null };
-          }
-        );
-      }
-    );
-
-    { old with userProfiles = newUserProfiles; reviews = newReviews };
+    {
+      old with
+      salons = newSalons;
+    };
   };
 };

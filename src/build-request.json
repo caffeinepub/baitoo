@@ -1,216 +1,193 @@
 {
   "kind": "build_request",
-  "title": "Add comprehensive profile system with photos and enhanced review photo uploads",
+  "title": "Add GPS-based nearby salon discovery with location management",
   "projectName": "Baitoo",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-24",
-      "text": "Add profile photo field to backend User type and implement uploadProfilePhoto and updateUserProfile functions to handle profile photo storage and user profile updates including name and phone",
+      "id": "REQ-33",
+      "text": "Extend the backend Salon type to include optional latitude (Float) and longitude (Float) fields for storing GPS coordinates",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "Profile photo upload option",
-          "Both Salon Owner and Customer must have: Profile photo upload option, Edit profile option, Save changes button"
+          "Store: Salon Name, Full Address, Latitude, Longitude"
         ]
       },
       "acceptanceCriteria": [
-        "User type includes optional profilePhoto field for storing image data or reference",
-        "uploadProfilePhoto function accepts user principal and photo data and stores it securely",
-        "updateUserProfile function allows updating name, phone, and profile photo",
-        "Photo data is stored efficiently and retrievable by principal"
+        "Salon type includes optional latitude and longitude fields",
+        "Existing salons without coordinates remain functional"
       ]
     },
     {
-      "id": "REQ-25",
-      "text": "Add photo upload field to Review type in backend and update submitReview function to accept and store optional review photos submitted by customers",
+      "id": "REQ-34",
+      "text": "Add backend function updateSalonLocation that allows admin users to update a salon's latitude and longitude coordinates by salon ID",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "When a customer gives a review, they should have: Star rating (1 to 5), Text review, Option to upload photo (example: haircut result photo)"
+          "Admin should be able to upload and save salon location easily"
         ]
       },
       "acceptanceCriteria": [
-        "Review type includes optional photos field (array or single photo reference)",
-        "submitReview function accepts optional photo data along with rating and text",
-        "Photos are stored securely and associated with the review record",
-        "getReviewsForSalon function returns reviews with photo data included"
+        "Function accepts salon ID, latitude, and longitude as parameters",
+        "Only admin users can call this function",
+        "Function updates the salon record with the provided coordinates",
+        "Returns success or error result"
       ]
     },
     {
-      "id": "REQ-26",
-      "text": "Remove ProfileSetupModal from displaying as the main screen after registration and profile creation, ensuring users are redirected to their appropriate dashboard (salon owner or customer) instead of staying on the profile setup page",
+      "id": "REQ-35",
+      "text": "Add location input fields (latitude and longitude) to the AdminDashboard for each salon with a save button to update salon coordinates",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "After registration and profile creation, the profile page should not stay open as main screen"
+          "Add location field for each salon in admin panel",
+          "Admin should be able to upload and save salon location easily"
         ]
       },
       "acceptanceCriteria": [
-        "After completing ProfileSetupModal, users are automatically redirected to their dashboard",
-        "Salon owners land on their salon management dashboard",
-        "Customers land on the salon discovery page",
-        "Profile setup modal does not remain visible after completion"
+        "Admin panel displays latitude and longitude input fields for each salon",
+        "Input fields show current coordinates if already set",
+        "Save button calls updateSalonLocation backend function",
+        "Success/error feedback is displayed after save attempt"
       ]
     },
     {
-      "id": "REQ-27",
-      "text": "Add a small profile icon in the top-right corner of the AppLayout header that is always visible for authenticated users and opens the user's profile page when clicked",
+      "id": "REQ-36",
+      "text": "Implement GPS location permission request flow in SalonDiscoveryPage that asks for user's current location when the page loads",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "A small profile icon should appear in the top-right corner of the app",
-          "When user clicks the profile icon, their profile page should open"
+          "Ask customer permission to access current GPS location"
         ]
       },
       "acceptanceCriteria": [
-        "Profile icon appears in header next to notification bell for authenticated users",
-        "Icon is consistently positioned in top-right corner across all pages",
-        "Clicking icon navigates to appropriate profile page based on user type",
-        "Icon uses a standard user avatar or profile symbol"
+        "Browser geolocation API permission is requested on page load",
+        "Permission state (granted/denied) is tracked",
+        "User's latitude and longitude are retrieved if permission is granted"
       ]
     },
     {
-      "id": "REQ-28",
-      "text": "Create a comprehensive salon owner profile page that displays and allows editing of profile photo, salon name, address, contact number, opening hours with a save changes button, and includes an image upload component supporting gallery and camera access",
+      "id": "REQ-37",
+      "text": "Add distance calculation utility function that computes the distance in kilometers between two GPS coordinates using the Haversine formula",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "Salon Owner Profile Should Include: Profile photo (shop logo or owner photo), Salon name, Address, Contact number, Opening hours, Edit option",
-          "Image upload should support gallery and camera"
+          "Calculate distance between customer and salons using latitude and longitude",
+          "Show distance in kilometers (example: \"1.5 km away\")"
         ]
       },
       "acceptanceCriteria": [
-        "Profile page displays current profile photo with upload/change option",
-        "Form fields for salon name, address, contact number, and opening hours are editable",
-        "Image upload component supports both gallery selection and camera capture",
-        "Save changes button calls backend to update profile with new data",
-        "Profile photo is displayed as a preview after upload before saving",
-        "Success message shown after successful profile update"
+        "Function accepts two coordinate pairs (lat1, lon1, lat2, lon2)",
+        "Returns distance in kilometers with one decimal place precision",
+        "Handles edge cases (same location returns 0 km)"
       ]
     },
     {
-      "id": "REQ-29",
-      "text": "Create a comprehensive customer profile page that displays and allows editing of profile photo, name, phone number, with a save changes button, displays booking history with past and upcoming bookings, and includes an image upload component supporting gallery and camera access",
+      "id": "REQ-38",
+      "text": "Update SalonDiscoveryPage to calculate and display distance from customer's current location to each salon that has GPS coordinates, showing the distance in the format '1.5 km away'",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "Customer Profile Should Include: Profile photo, Name, Phone number, Booking history, Edit option",
-          "Image upload should support gallery and camera"
+          "Show distance in kilometers (example: \"1.5 km away\")"
         ]
       },
       "acceptanceCriteria": [
-        "Profile page displays current profile photo with upload/change option",
-        "Form fields for name and phone number are editable",
-        "Image upload component supports both gallery selection and camera capture",
-        "Booking history section shows list of past and upcoming bookings with status",
-        "Save changes button calls backend to update profile with new data",
-        "Profile photo is displayed as a preview after upload before saving",
-        "Success message shown after successful profile update"
+        "Distance is displayed next to each salon that has coordinates",
+        "Distance format matches '1.5 km away' pattern",
+        "Salons without coordinates do not show distance"
       ]
     },
     {
-      "id": "REQ-30",
-      "text": "Update CustomerBookingsPage review submission dialog to include a photo upload option allowing customers to upload photos of their haircut results, supporting gallery and camera access, and send the photo data along with rating and text to the backend submitReview function",
+      "id": "REQ-39",
+      "text": "Update SalonDiscoveryPage to sort salons by distance from customer's location, placing nearest salons first when location permission is granted",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "When a customer gives a review, they should have: Star rating (1 to 5), Text review, Option to upload photo (example: haircut result photo)",
-          "Image upload should support gallery and camera"
+          "Sort salons by nearest first",
+          "Only nearby salons should appear on top"
         ]
       },
       "acceptanceCriteria": [
-        "Review dialog includes photo upload button below text review field",
-        "Photo upload component supports gallery selection and camera capture",
-        "Selected photo is previewed in the dialog before submission",
-        "submitReview mutation sends photo data along with rating and text",
-        "Photo upload is optional and review can be submitted without photo",
-        "Clear indication when photo is selected and option to remove it before submission"
+        "When location permission is granted, salons are sorted by ascending distance",
+        "Salons without coordinates appear after salons with coordinates",
+        "When location permission is denied, original salon order is preserved"
       ]
     },
     {
-      "id": "REQ-31",
-      "text": "Update SalonDetailPage reviews section to display customer review photos alongside ratings and text reviews, showing photo thumbnails that can be clicked to view full size",
+      "id": "REQ-40",
+      "text": "Update SalonDiscoveryPage heading text to dynamically display 'Nearby You' when location permission is granted, or 'Salons in Faizabad' when permission is denied or not available",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "Uploaded review photos should be visible under salon reviews section"
+          "Replace static text \"Salon in Faizabad\"",
+          "If location permission is allowed → show heading: \"Nearby You\"",
+          "If location permission is denied → show default city salons"
         ]
       },
       "acceptanceCriteria": [
-        "Review cards display photo thumbnails when photos are present",
-        "Photos are shown below or alongside review text",
-        "Clicking a photo thumbnail opens a larger view or modal",
-        "Reviews without photos display normally without photo placeholder",
-        "Multiple photos per review are supported if backend allows",
-        "Photo loading states and error handling are implemented"
+        "Heading displays 'Nearby You' when GPS permission is granted",
+        "Heading displays 'Salons in Faizabad' when GPS permission is denied or unavailable",
+        "Heading updates immediately after permission state changes"
       ]
     },
     {
-      "id": "REQ-32",
-      "text": "Add a reviews section to the salon owner dashboard that displays all reviews for the salon including star ratings, text reviews, customer names, and uploaded review photos with photo viewing capability",
+      "id": "REQ-41",
+      "text": "Add a notice text 'Please reach the salon at least 10 minutes before your booking time.' below the booking confirmation button on the BookingPage",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "Salon owner should be able to view all reviews inside dashboard"
+          "On customer booking page, below booking button add: \"Please reach the salon at least 10 minutes before your booking time.\""
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard includes a reviews tab or section showing all salon reviews",
-        "Each review displays customer name, rating stars, text, and timestamp",
-        "Review photos are displayed as thumbnails with click-to-enlarge functionality",
-        "Reviews are sorted by date (newest first)",
-        "Empty state shown when no reviews exist",
-        "Reviews section is easily accessible from main dashboard navigation"
+        "Notice text appears directly below the booking button",
+        "Text is clearly visible and styled appropriately",
+        "Text reads exactly: 'Please reach the salon at least 10 minutes before your booking time.'"
       ]
     }
   ],
   "constraints": [
-    "Do not modify useInternetIdentity.ts, useInternetIdentity.tsx, useActor.ts, main.tsx, or components/ui directory",
-    "Maintain single-actor backend architecture with all logic in main.mo",
-    "Profile photos and review photos must be stored securely in the backend",
-    "Image upload must work on mobile devices with gallery and camera access",
-    "Keep the system lightweight and suitable for MVP launch"
+    "Respect single-actor backend architecture and keep all logic in main.mo",
+    "Do not modify immutable frontend paths: useInternetIdentity, useActor, main.tsx, and ui components",
+    "Use React Query for state management and data fetching",
+    "Maintain existing authentication and authorization patterns"
   ],
   "nonGoals": [
-    "Advanced photo editing features or filters",
-    "Cloud storage integration for images (store in backend)",
-    "Social media sharing of reviews or photos",
-    "Video upload capability",
-    "Bulk photo uploads",
-    "Photo gallery management beyond basic upload and display"
+    "Real-time location tracking or continuous GPS monitoring",
+    "Map visualization or interactive maps",
+    "Geocoding service integration to convert addresses to coordinates",
+    "Automatic salon location detection",
+    "Distance-based filtering or radius search"
   ],
   "imageRequirements": {
-    "required": [
-      "Simple user profile avatar icon for header, circular silhouette design (profile-icon.dim_40x40.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }
